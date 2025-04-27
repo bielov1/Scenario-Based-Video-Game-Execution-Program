@@ -6,68 +6,293 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <vector>
+
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 #define MAX_LOADSTRING  100
 #define screen_width    800
-#define screen_height   800
-#define grid_rows       10
-#define grid_cols		10
+#define screen_height   600
 
-int world_map[grid_cols][grid_rows] = 
+std::vector<std::vector<int>> world_map = 
 {
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0, 1, 0, 0, 0}
+	{0, 1, 1, 1, 0, 0},
+	{0, 0, 0, 1, 0, 0},
+	{0, 0, 1, 1, 0, 0},
+	{0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0},
 };
+
 
 class Vector2 {
 private:
 public:
+	float x, y;
+	Vector2()
+		: x(0), y(0) {}
 	Vector2(float x, float y)
-		: x(x), y(y)
-	{ }
-	Vector2 sub(Vector2 &that)
+		: x(x), y(y) {}
+	Vector2(const Vector2& v)
+		: x(v.x), y(v.y) {}
+	Vector2 sub(const Vector2 &that)
 		{ return Vector2(x - that.x, y - that.y); }
-
-	Vector2 add(Vector2 &that)
+	Vector2 add(const Vector2 &that)
 		{ return Vector2(x + that.x, y + that.y); }
+	Vector2 mul(const Vector2 &that)
+		{ return Vector2(x*that.x, y*that.y); }
+	Vector2 mul(float f)
+		{ return Vector2(x*f, y*f); }
 	float length()
 		{ return sqrt(x*x + y*y); }
 	Vector2 norm()
 		{ float l = length();
 	      if (l == 0) return Vector2(0, 0);
 		  return Vector2(x/l, y/l); }
-	float x, y;
+	Vector2 scale(float f)
+		{ return Vector2(x*f, y*f); }
+	Vector2 rot90()
+		{ return Vector2(-y, x); }
+	Vector2 rot_minus90()
+		{ return Vector2(y, -x); }
+	Vector2 lerp(const Vector2 &that, float t)
+		{ return Vector2(x + t * (that.x - x), y + t * (that.y - y)); }
 };
 
+inline Vector2 from_angle(float d)
+	{ return Vector2(cos(d), sin(d)); }
 
+inline Vector2 zero()
+	{ return Vector2(0, 0); }
+
+
+class Player {
+private:
+public:
+	Vector2 pos;
+	float dir;
+
+	Player(Vector2 p, float d)
+		: pos(p), dir(d) {}
+	Player()
+		: pos(zero()), dir(0.0F) {}
+	void fov_range(Vector2& out_p1, Vector2& out_p2, float FOV)
+	{
+		float l = tan(FOV*0.5);
+		Vector2 p = pos.add(from_angle(dir));
+		out_p1 = p.sub(pos).rot_minus90().add(p).scale(l);
+		out_p2 = p.sub(pos).rot90().add(p).scale(l);
+	}
+
+};
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-Vector2 *p1 = new Vector2(grid_cols*0.43, grid_rows*0.32);			    // x and  y start position
+Player player;
+Vector2 grid_size;
+
+const float r = 5.0F;
+const Vector2 move_speed(0.1F, 0.1F);
+const float rotation_speed = 0.05F;
+const float FOV = M_PI/2;
+const float render_width = 100.0F;
+const int FPS = 20;
+
 
 HPEN red_pen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 HBRUSH green_brush = CreateSolidBrush(RGB(0, 255, 0));
 HBRUSH bg_brush = CreateSolidBrush(RGB(18, 18, 18));
 HBRUSH blue_brush = CreateSolidBrush(RGB(0, 0, 255));
+HBRUSH wall_brush = CreateSolidBrush(RGB(212, 212, 0));
 
-const int wall_width = screen_width/grid_cols;
-const int wall_height = screen_height/grid_rows;
-const float global_scale = min(screen_width / grid_cols, screen_height / grid_rows);
-const float r = 5.0F;
-const float move_speed = 0.2F;
+int on_timer(HWND hwnd)
+{
+	InvalidateRect(hwnd, NULL, FALSE);
+	return 0;
+}
+
+
+Vector2 map_size(std::vector<std::vector<int>> map)
+{
+	float x = map[0].size();
+	float y = map.size();
+	return Vector2(x, y);
+}
+
+void init(HWND hwnd)
+{
+	grid_size = map_size(world_map);
+	player.pos = grid_size.mul(Vector2(0.78, 0.79));
+	player.dir = M_PI * 1.25;
+	SetTimer(hwnd, WM_USER + 1, 1000 / FPS, 0);
+}
+
+void stroke_line(HDC hdc, const Vector2 &p1, const Vector2 &p2, float scale)
+{
+	MoveToEx(hdc, p1.x * scale, p1.y * scale, nullptr);
+	LineTo(hdc, p2.x * scale, p2.y * scale);
+}
+
+float cast_ray(Vector2& p1, Vector2& p2, int cols, int rows) 
+{
+    float dx = p2.x - p1.x; // ray dirx
+    float dy = p2.y - p1.y; // ray diry
+    
+    int stepx = 0;
+    int stepy = 0;
+
+
+    if (dx == 0) dx = 1e-6f;
+    if (dy == 0) dy = 1e-6f;
+
+    float sx = sqrt(1 + (dy*dy)/(dx*dx));
+    float sy = sqrt(1 + (dx*dx)/(dy*dy));
+
+    float ray_len_x = 0;
+    float ray_len_y = 0;
+    
+    int map_check_x = int(p1.x);
+    int map_check_y = int(p1.y);
+
+    if (dx < 0) {
+        stepx = -1;
+        ray_len_x = (p1.x - float(map_check_x)) * sx;
+    } else {
+        stepx = 1;
+        ray_len_x = (float(map_check_x + 1) - p1.x) * sx;
+    }
+
+    if (dy < 0) {
+        stepy = -1;
+        ray_len_y = (p1.y - float(map_check_y)) * sy;
+    } else {
+        stepy = 1;
+        ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
+    }
+    bool tile_found = false;
+    float max_distance = 100.0f;
+    float distance = 0.0f;
+
+    while (!tile_found && distance < max_distance) {
+        float pcx, pcy;
+        if (ray_len_x < ray_len_y) {
+            distance = ray_len_x;
+            map_check_x += stepx;
+            ray_len_x += sx;
+
+        } else {
+            distance = ray_len_y;
+            map_check_y += stepy;
+            ray_len_y += sy;
+        }
+
+        if (map_check_x >= 0 && map_check_x < cols && map_check_y >= 0 && map_check_y < rows) {
+            if (map_check_y < rows && map_check_x < cols && 
+                world_map[map_check_y][map_check_x] == 1) {
+                tile_found = true;
+            }
+        }
+    }
+
+    return distance;
+}
+
+
+void draw_grid(HDC hdc, int cols, int rows, float scale)
+{
+	SelectObject(hdc, red_pen);
+
+	for (int x = 0; x <= cols; x++) {
+		stroke_line(hdc, Vector2(x, 0), Vector2(x, cols), scale);
+	}
+
+	for (int y = 0; y <= rows; y++) {
+		stroke_line(hdc, Vector2(0, y), Vector2(rows, y), scale);
+	}
+}
+
+
+void fill_walls(HDC hdc, int cols, int rows, float scale, std::vector<std::vector<int>> map)
+{
+	SelectObject(hdc, blue_brush);
+
+	int wall_pos_x = 0;
+	int wall_pos_y = 0;
+	for (int y = 0; y < rows; y++) {
+		for (int x = 0; x < cols; x++) {
+			if (map[y][x] == 1) {
+				wall_pos_x = x * scale;
+				wall_pos_y = y * scale;
+				Rectangle(hdc, wall_pos_x, wall_pos_y, wall_pos_x + scale, wall_pos_y + scale);
+			}
+		}
+	}
+}
+
+
+
+void redraw_frame(HDC hdc)
+{
+	SelectObject(hdc, bg_brush);
+	Rectangle(hdc, 0, 0, screen_width, screen_height);
+}
+
+
+void draw_minimap(HDC hdc, float scale, std::vector<std::vector<int>> map)
+{	
+	SelectObject(hdc, bg_brush);
+	Rectangle(hdc, 0, 0, grid_size.x * scale, grid_size.y * scale);
+
+	draw_grid(hdc, grid_size.x, grid_size.y, scale);
+	fill_walls(hdc, grid_size.x, grid_size.y, scale, map);
+    
+	SelectObject(hdc, green_brush);
+	Ellipse(hdc, player.pos.x * scale - r, player.pos.y * scale - r, player.pos.x * scale + r, player.pos.y * scale + r);
+	
+	//drawing camera
+	Vector2 p1;
+	Vector2 p2;
+	player.fov_range(p1, p2, FOV);
+	stroke_line(hdc, p1, p2, scale);
+	stroke_line(hdc, player.pos, p1, scale);
+	stroke_line(hdc, player.pos, p2, scale);
+	
+	return;
+}
+
+void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
+{
+	float strip_width = screen_width/render_width;
+	Vector2 p1;
+	Vector2 p2;
+	player.fov_range(p1, p2, FOV);
+	SelectObject(hdc, wall_brush);
+	for (int x = 0; x < render_width; x++) {
+		Vector2 p = p1.lerp(p2, x/render_width);
+		float d = cast_ray(player.pos, p, grid_size.x, grid_size.y);
+		if (d < 100.0F) {
+			float strip_height = screen_height / d;
+			float strip_y = (screen_height - strip_height) * 0.5;
+			Rectangle(hdc, x*strip_width, strip_y, (x + 1) * strip_width, strip_y + strip_height);
+		}
+	}
+
+	return;
+}
+
+void draw_frame(HDC hdc)
+{
+	redraw_frame(hdc);
+	float minimap_scale_factor = 0.3F;
+	float scale = minimap_scale_factor * min(screen_width / grid_size.x, screen_height / grid_size.y);
+	render(hdc, scale, world_map);
+	draw_minimap(hdc, scale, world_map);
+}
+
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -157,7 +382,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	RECT  window_rect;
 	window_rect.left   = 0;
 	window_rect.top    = 0;
-	window_rect.bottom =	screen_height;
+	window_rect.bottom = screen_height;
 	window_rect.right  = screen_width;
 
 	AdjustWindowRect(&window_rect,  WS_OVERLAPPEDWINDOW, TRUE);
@@ -168,157 +393,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	{
 		return FALSE;
 	}
-	SetTimer(hWnd, WM_USER + 1, 50, 0);
+	
+	init(hWnd);
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
 	return TRUE;
-}
-
-int on_timer(HWND hWnd)
-{
-	InvalidateRect(hWnd, NULL, FALSE);
-	return 0;
-}
-void stroke_line(HDC hdc, const Vector2 &p1, const Vector2 &p2)
-{
-	MoveToEx(hdc, p1.x * global_scale, p1.y * global_scale, nullptr);
-	LineTo(hdc, p2.x * global_scale, p2.y * global_scale);
-}
-
-void draw_grid(HDC hdc)
-{
-	SelectObject(hdc, red_pen);
-
-	for (int x = 0; x <= grid_cols; x++) {
-		stroke_line(hdc, Vector2(x, 0), Vector2(x, grid_cols));
-	}
-
-	for (int y = 0; y <= grid_rows; y++) {
-		stroke_line(hdc, Vector2(0, y), Vector2(grid_rows, y));
-	}
-}
-
-void fill_walls(HDC hdc)
-{
-	SelectObject(hdc, blue_brush);
-
-	float wall_size = wall_height;
-	for (int i = 0; i < grid_cols; i++) {
-		for (int j = 0; j < grid_rows; j++) {
-			if (world_map[i][j] == 1) {
-				int wall_pos_x = i * global_scale;
-				int wall_pos_y = j * global_scale;
-				Rectangle(hdc, wall_pos_x, wall_pos_y, wall_pos_x + wall_size, wall_pos_y + wall_size);
-			}
-		}
-	}
-}
-
-void line_analyzer(HDC hdc, Vector2& p1, Vector2& p2)
-{
-	float dx = p2.x - p1.x; // ray dirx
-	float dy = p2.y - p1.y; // ray diry
-	
-	int stepx = 0;
-	int stepy = 0;
-
-	float sx = sqrt(1 + (dy*dy/dx*dx));
-	float sy = sqrt(1 + (dx*dx/dy*dy));
-
-	float ray_len_x = 0;
-	float ray_len_y = 0;
-	
-	int map_check_x = int(p1.x);
-	int map_check_y = int(p1.y);
-
-	if (dx < 0) {
-		stepx = -1;
-		ray_len_x = (p1.x - float(map_check_x)) * sx;
-	} else {
-		stepx = 1;
-		ray_len_x = (float(map_check_x + 1) - p1.x) * sx;
-	}
-
-	if (dy < 0) {
-		stepy = -1;
-		ray_len_y = (p1.y - float(map_check_y)) * sy;
-	} else {
-		stepy = 1;
-		ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
-	}
-	bool tile_found = false;
-	float max_distance = 100.0f;
-	float distance = 0.0f;
-	
-	SelectObject(hdc, green_brush);
-
-	while (!tile_found && distance < max_distance) {
-		float pcx, pcy;
-		if (ray_len_x < ray_len_y) {
-			distance = ray_len_x;
-
-			pcx = (stepx > 0) ? float(map_check_x + 1) : float(map_check_x);
-			float t = (pcx - p1.x) / dx;
-			pcy = p1.y + t * dy;
-
-			map_check_x += stepx;
-			ray_len_x += sx;
-
-		} else {
-			distance = ray_len_y;
-
-			pcy = (stepy > 0) ? float(map_check_y + 1) : float(map_check_y);
-			float t = (pcy - p1.y) / dy;
-			pcx = p1.x + t * dx;
-
-			map_check_y += stepy;
-			ray_len_y += sy;
-		}
-
-
-		if (map_check_x >= 0 && map_check_x < grid_cols && map_check_y >= 0 && map_check_y < grid_rows) {
-			Ellipse(hdc, pcx * global_scale - r, pcy * global_scale - r, 
-					pcx * global_scale + r, pcy * global_scale + r);
-			if (world_map[map_check_x][map_check_y] == 1) {
-				tile_found = true;
-			}
-		}
-	}
-
-	return;
-}
-
-void redraw_frame(HDC hdc)
-{
-	SelectObject(hdc, bg_brush);
-	Rectangle(hdc, 0, 0, screen_width, screen_height);
-}
-
-void draw_frame(HDC hdc)
-{
-	redraw_frame(hdc);
-	POINT mouse_point;
-	if (GetCursorPos(&mouse_point) == 0) {
-		OutputDebugStringA("unable to read cursor point");
-	}
-	
-	float cursor_col_point = mouse_point.x / global_scale;
-	float cursor_row_point = mouse_point.y / global_scale;
-	draw_grid(hdc);
-	fill_walls(hdc);
-    
-	SelectObject(hdc, green_brush);
-	
-	Ellipse(hdc, p1->x * global_scale - r, p1->y * global_scale - r, p1->x * global_scale + r, p1->y * global_scale + r);
-
-	Vector2 *p2 = new Vector2(cursor_col_point, cursor_row_point);
-	Ellipse(hdc, p2->x *global_scale - r, p2->y * global_scale - r, p2->x * global_scale + r, p2->y * global_scale + r);
-	stroke_line(hdc, *p1, *p2);
-
-	line_analyzer(hdc, *p1, *p2);
-
-	delete p2;
 }
 
 //
@@ -338,13 +418,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_KEYDOWN:
 			{
 				if (wParam == 'S')
-					p1->y += move_speed;
+					player.pos = player.pos.sub(from_angle(player.dir).mul(move_speed));
 				else if (wParam == 'W')
-					p1->y -= move_speed;
-				else if (wParam == 'A')
-					p1->x -= move_speed;
-				else if (wParam == 'D')
-					p1->x += move_speed;
+					player.pos = player.pos.add(from_angle(player.dir).mul(move_speed));
+				else if (wParam == VK_LEFT)
+					player.dir -= rotation_speed;
+				else if (wParam == VK_RIGHT)
+					player.dir += rotation_speed;
 			}
 			break;
 		case WM_COMMAND:
