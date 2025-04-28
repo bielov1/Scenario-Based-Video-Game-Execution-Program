@@ -137,7 +137,12 @@ void stroke_line(HDC hdc, const Vector2 &p1, const Vector2 &p2, float scale)
 	LineTo(hdc, p2.x * scale, p2.y * scale);
 }
 
-float cast_ray(Vector2& p1, Vector2& p2, int cols, int rows) 
+bool inside_map(int cell_x, int cell_y, Vector2 map_size)
+{
+	return cell_x >= 0 && cell_x <= map_size.x && cell_y >= 0 && cell_y <= map_size.y;
+}
+
+float cast_ray(Vector2& p1, Vector2& p2, std::vector<std::vector<int>> map) 
 {
     float dx = p2.x - p1.x; // ray dirx
     float dy = p2.y - p1.y; // ray diry
@@ -151,12 +156,15 @@ float cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 
     float sx = sqrt(1 + (dy*dy)/(dx*dx));
     float sy = sqrt(1 + (dx*dx)/(dy*dy));
+	float perp_wall_dist;
 
     float ray_len_x = 0;
     float ray_len_y = 0;
     
     int map_check_x = int(p1.x);
     int map_check_y = int(p1.y);
+
+	Vector2 grid_size = map_size(map);
 
     if (dx < 0) {
         stepx = -1;
@@ -174,31 +182,33 @@ float cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
         ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
     }
     bool tile_found = false;
-    float max_distance = 100.0f;
-    float distance = 0.0f;
+	int side;
 
-    while (!tile_found && distance < max_distance) {
+    while (!tile_found) {
         float pcx, pcy;
         if (ray_len_x < ray_len_y) {
-            distance = ray_len_x;
             map_check_x += stepx;
             ray_len_x += sx;
+			side = 0;
 
         } else {
-            distance = ray_len_y;
             map_check_y += stepy;
             ray_len_y += sy;
+			side = 1;
         }
 
-        if (map_check_x >= 0 && map_check_x < cols && map_check_y >= 0 && map_check_y < rows) {
-            if (map_check_y < rows && map_check_x < cols && 
-                world_map[map_check_y][map_check_x] == 1) {
-                tile_found = true;
-            }
+        if (map_check_x >= 0 && map_check_x < grid_size.x && 
+		    map_check_y >= 0 && map_check_y < grid_size.y &&
+		    world_map[map_check_y][map_check_x] == 1) {
+			tile_found = true;
         }
+
+		if (!inside_map(map_check_x, map_check_y, grid_size)) break;
     }
 
-    return distance;
+	perp_wall_dist = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
+
+    return perp_wall_dist;
 }
 
 
@@ -273,11 +283,14 @@ void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
 	SelectObject(hdc, wall_brush);
 	for (int x = 0; x < render_width; x++) {
 		Vector2 p = p1.lerp(p2, x/render_width);
-		float d = cast_ray(player.pos, p, grid_size.x, grid_size.y);
-		if (d < 100.0F) {
-			float strip_height = screen_height / d;
-			float strip_y = (screen_height - strip_height) * 0.5;
-			Rectangle(hdc, x*strip_width, strip_y, (x + 1) * strip_width, strip_y + strip_height);
+		float perp_dist = cast_ray(player.pos, p, map);
+		if (perp_dist < 100.0F) {
+			int strip_height = (int)(screen_height / perp_dist);
+			int strip_start = (screen_height - strip_height) * 0.5;
+			if (strip_start < 0) strip_start = 0;
+			int strip_end = (screen_height + strip_height) * 0.5;
+			if (strip_end >= screen_height) strip_end = screen_height - 1;
+			Rectangle(hdc, x*strip_width, strip_start, (x + 1) * strip_width, strip_end);
 		}
 	}
 

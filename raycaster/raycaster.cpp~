@@ -151,6 +151,7 @@ float cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 
     float sx = sqrt(1 + (dy*dy)/(dx*dx));
     float sy = sqrt(1 + (dx*dx)/(dy*dy));
+	float perp_wall_dist;
 
     float ray_len_x = 0;
     float ray_len_y = 0;
@@ -174,31 +175,35 @@ float cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
         ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
     }
     bool tile_found = false;
-    float max_distance = 100.0f;
-    float distance = 0.0f;
+	float max_distance = 100.0f;
+	float distance = 0.0f;
+	int side;
 
     while (!tile_found && distance < max_distance) {
         float pcx, pcy;
         if (ray_len_x < ray_len_y) {
-            distance = ray_len_x;
             map_check_x += stepx;
+			distance = ray_len_x;
             ray_len_x += sx;
+			side = 0;
 
         } else {
-            distance = ray_len_y;
             map_check_y += stepy;
+			distance = ray_len_y;
             ray_len_y += sy;
+			side = 1;
         }
 
-        if (map_check_x >= 0 && map_check_x < cols && map_check_y >= 0 && map_check_y < rows) {
-            if (map_check_y < rows && map_check_x < cols && 
-                world_map[map_check_y][map_check_x] == 1) {
-                tile_found = true;
-            }
+        if (map_check_x >= 0 && map_check_x < cols && 
+		    map_check_y >= 0 && map_check_y < rows &&
+		    world_map[map_check_x][map_check_y] == 1) {
+			tile_found = true;
         }
     }
 
-    return distance;
+	perp_wall_dist = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
+
+    return perp_wall_dist;
 }
 
 
@@ -264,6 +269,12 @@ void draw_minimap(HDC hdc, float scale, std::vector<std::vector<int>> map)
 	return;
 }
 
+bool hitting_wall(float dist, std::vector<std::vector<int>> map)
+{
+	Vector2 p = from_angle(dist);
+	return map[p.x][p.y] != 0;
+}
+
 void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
 {
 	float strip_width = screen_width/render_width;
@@ -273,11 +284,14 @@ void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
 	SelectObject(hdc, wall_brush);
 	for (int x = 0; x < render_width; x++) {
 		Vector2 p = p1.lerp(p2, x/render_width);
-		float d = cast_ray(player.pos, p, grid_size.x, grid_size.y);
-		if (d < 100.0F) {
-			float strip_height = screen_height / d;
-			float strip_y = (screen_height - strip_height) * 0.5;
-			Rectangle(hdc, x*strip_width, strip_y, (x + 1) * strip_width, strip_y + strip_height);
+		float perp_dist = cast_ray(player.pos, p, grid_size.x, grid_size.y);
+		if (perp_dist < 100.0F) {
+			int strip_height = (int)(screen_height / perp_dist);
+			int strip_start = (screen_height - strip_height) * 0.5;
+			if (strip_start < 0) strip_start = 0;
+			int strip_end = (screen_height + strip_height) * 0.5;
+			if (strip_end >= screen_height) strip_end = screen_height - 1;
+			Rectangle(hdc, x*strip_width, strip_start, (x + 1) * strip_width, strip_end);
 		}
 	}
 
@@ -290,7 +304,7 @@ void draw_frame(HDC hdc)
 	float minimap_scale_factor = 0.3F;
 	float scale = minimap_scale_factor * min(screen_width / grid_size.x, screen_height / grid_size.y);
 	render(hdc, scale, world_map);
-	//draw_minimap(hdc, scale, world_map);
+	draw_minimap(hdc, scale, world_map);
 }
 
 
