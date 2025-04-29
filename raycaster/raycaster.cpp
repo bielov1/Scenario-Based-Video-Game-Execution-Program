@@ -18,9 +18,9 @@
 
 std::vector<std::vector<int>> world_map = 
 {
-	{0, 1, 1, 1, 0, 0},
+	{0, 1, 2, 3, 0, 0},
 	{0, 0, 0, 1, 0, 0},
-	{0, 0, 1, 1, 0, 0},
+	{0, 0, 3, 2, 0, 0},
 	{0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0},
@@ -70,6 +70,7 @@ inline Vector2 zero()
 
 class Player {
 private:
+	const float FOV = M_PI/2;
 public:
 	Vector2 pos;
 	float dir;
@@ -78,7 +79,7 @@ public:
 		: pos(p), dir(d) {}
 	Player()
 		: pos(zero()), dir(0.0F) {}
-	void fov_range(Vector2& out_p1, Vector2& out_p2, float FOV)
+	void fov_range(Vector2& out_p1, Vector2& out_p2)
 	{
 		float l = tan(FOV*0.5);
 		Vector2 p = pos.add(from_angle(dir));
@@ -86,6 +87,17 @@ public:
 		out_p2 = p.sub(pos).rot90().add(p).scale(l);
 	}
 
+};
+
+struct Raycast_Result {
+	Vector2 hit_pos;
+	float perp_dist;
+	bool hit;
+	Raycast_Result(Vector2 v, float d, bool h) 
+		: hit_pos(v), perp_dist(d), hit(h) {}
+		
+	Raycast_Result()
+		: hit_pos(Vector2(0, 0)), perp_dist(0.0F), hit(false) {}
 };
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -98,23 +110,23 @@ Vector2 grid_size;
 const float r = 5.0F;
 const Vector2 move_speed(0.1F, 0.1F);
 const float rotation_speed = 0.05F;
-const float FOV = M_PI/2;
-const float render_width = 100.0F;
 const int FPS = 20;
 
 
 HPEN red_pen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
-HBRUSH green_brush = CreateSolidBrush(RGB(0, 255, 0));
+HBRUSH green_player_brush = CreateSolidBrush(RGB(0, 255, 0));
 HBRUSH bg_brush = CreateSolidBrush(RGB(18, 18, 18));
-HBRUSH blue_brush = CreateSolidBrush(RGB(0, 0, 255));
-HBRUSH wall_brush = CreateSolidBrush(RGB(212, 212, 0));
+HBRUSH blue_wall_brush = CreateSolidBrush(RGB(0, 0, 255));
+HBRUSH red_wall_brush = CreateSolidBrush(RGB(255, 0, 0));
+HBRUSH green_wall_brush = CreateSolidBrush(RGB(0, 255, 0));
+HBRUSH default_wall_brush = CreateSolidBrush(RGB(255, 255, 255));
+
 
 int on_timer(HWND hwnd)
 {
 	InvalidateRect(hwnd, NULL, FALSE);
 	return 0;
 }
-
 
 Vector2 map_size(std::vector<std::vector<int>> map)
 {
@@ -137,12 +149,12 @@ void stroke_line(HDC hdc, const Vector2 &p1, const Vector2 &p2, float scale)
 	LineTo(hdc, p2.x * scale, p2.y * scale);
 }
 
-bool inside_map(int cell_x, int cell_y, Vector2 map_size)
+bool inside_map(int cell_x, int cell_y, int cols, int rows)
 {
-	return cell_x >= 0 && cell_x <= map_size.x && cell_y >= 0 && cell_y <= map_size.y;
+	return cell_x >= 0 && cell_x <= cols && cell_y >= 0 && cell_y <= rows;
 }
 
-float cast_ray(Vector2& p1, Vector2& p2, std::vector<std::vector<int>> map) 
+Raycast_Result cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 {
     float dx = p2.x - p1.x; // ray dirx
     float dy = p2.y - p1.y; // ray diry
@@ -150,21 +162,18 @@ float cast_ray(Vector2& p1, Vector2& p2, std::vector<std::vector<int>> map)
     int stepx = 0;
     int stepy = 0;
 
-
     if (dx == 0) dx = 1e-6f;
     if (dy == 0) dy = 1e-6f;
 
     float sx = sqrt(1 + (dy*dy)/(dx*dx));
     float sy = sqrt(1 + (dx*dx)/(dy*dy));
-	float perp_wall_dist;
+	float perp_dist;
 
     float ray_len_x = 0;
     float ray_len_y = 0;
     
     int map_check_x = int(p1.x);
     int map_check_y = int(p1.y);
-
-	Vector2 grid_size = map_size(map);
 
     if (dx < 0) {
         stepx = -1;
@@ -181,10 +190,9 @@ float cast_ray(Vector2& p1, Vector2& p2, std::vector<std::vector<int>> map)
         stepy = 1;
         ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
     }
-    bool tile_found = false;
-	int side;
 
-    while (!tile_found) {
+	int side;
+    while (true) {
         float pcx, pcy;
         if (ray_len_x < ray_len_y) {
             map_check_x += stepx;
@@ -197,20 +205,18 @@ float cast_ray(Vector2& p1, Vector2& p2, std::vector<std::vector<int>> map)
 			side = 1;
         }
 
-        if (map_check_x >= 0 && map_check_x < grid_size.x && 
-		    map_check_y >= 0 && map_check_y < grid_size.y &&
-		    world_map[map_check_y][map_check_x] == 1) {
-			tile_found = true;
+        if (map_check_x >= 0 && map_check_x < cols && 
+		    map_check_y >= 0 && map_check_y < rows &&
+		    world_map[map_check_y][map_check_x] != 0) {
+			perp_dist = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
+			return Raycast_Result(Vector2(map_check_x, map_check_y), perp_dist, true);
         }
 
-		if (!inside_map(map_check_x, map_check_y, grid_size)) break;
+		if (!inside_map(map_check_x, map_check_y, cols, rows)) break;
     }
 
-	perp_wall_dist = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
-
-    return perp_wall_dist;
+	return Raycast_Result(Vector2(0, 0), 0.0F, false);
 }
-
 
 void draw_grid(HDC hdc, int cols, int rows, float scale)
 {
@@ -225,32 +231,43 @@ void draw_grid(HDC hdc, int cols, int rows, float scale)
 	}
 }
 
+HBRUSH get_wall_brush(int wall)
+{
+	switch(wall) {
+	case 1:
+		return red_wall_brush;
+	case 2:
+		return green_wall_brush;
+	case 3:
+		return blue_wall_brush;
+	default:
+		return default_wall_brush;
+	}
+}
 
 void fill_walls(HDC hdc, int cols, int rows, float scale, std::vector<std::vector<int>> map)
 {
-	SelectObject(hdc, blue_brush);
-
 	int wall_pos_x = 0;
 	int wall_pos_y = 0;
+	HBRUSH color;
 	for (int y = 0; y < rows; y++) {
 		for (int x = 0; x < cols; x++) {
-			if (map[y][x] == 1) {
+			if (map[y][x] != 0) {
 				wall_pos_x = x * scale;
 				wall_pos_y = y * scale;
+				color = get_wall_brush(map[y][x]);
+				SelectObject(hdc, color);
 				Rectangle(hdc, wall_pos_x, wall_pos_y, wall_pos_x + scale, wall_pos_y + scale);
 			}
 		}
 	}
 }
 
-
-
 void redraw_frame(HDC hdc)
 {
 	SelectObject(hdc, bg_brush);
 	Rectangle(hdc, 0, 0, screen_width, screen_height);
 }
-
 
 void draw_minimap(HDC hdc, float scale, std::vector<std::vector<int>> map)
 {	
@@ -260,44 +277,54 @@ void draw_minimap(HDC hdc, float scale, std::vector<std::vector<int>> map)
 	draw_grid(hdc, grid_size.x, grid_size.y, scale);
 	fill_walls(hdc, grid_size.x, grid_size.y, scale, map);
     
-	SelectObject(hdc, green_brush);
+	SelectObject(hdc, green_player_brush);
 	Ellipse(hdc, player.pos.x * scale - r, player.pos.y * scale - r, player.pos.x * scale + r, player.pos.y * scale + r);
 	
 	//drawing camera
 	Vector2 p1;
 	Vector2 p2;
-	player.fov_range(p1, p2, FOV);
+	player.fov_range(p1, p2);
 	stroke_line(hdc, p1, p2, scale);
 	stroke_line(hdc, player.pos, p1, scale);
 	stroke_line(hdc, player.pos, p2, scale);
-	
-	return;
 }
 
 void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
 {
-	float strip_width = screen_width/render_width;
 	Vector2 p1;
 	Vector2 p2;
-	player.fov_range(p1, p2, FOV);
-	SelectObject(hdc, wall_brush);
+	player.fov_range(p1, p2);
+	Vector2 grid_size = map_size(map);
+
+	float render_width = 100.0F;
+	float strip_width = screen_width/render_width;
+	RECT stripe_rect;
 	for (int x = 0; x < render_width; x++) {
 		Vector2 p = p1.lerp(p2, x/render_width);
-		float perp_dist = cast_ray(player.pos, p, map);
-		if (perp_dist < 100.0F) {
-			int strip_height = (int)(screen_height / perp_dist);
+		Raycast_Result ray_result = cast_ray(player.pos, p, grid_size.x, grid_size.y);
+		if (ray_result.hit) {
+			HBRUSH color = get_wall_brush(map[ray_result.hit_pos.y][ray_result.hit_pos.x]);
+
+			//fisheye is not being fixed
+			int strip_height = (int)(screen_height / ray_result.perp_dist);
 			int strip_start = (screen_height - strip_height) * 0.5;
 			if (strip_start < 0) strip_start = 0;
 			int strip_end = (screen_height + strip_height) * 0.5;
 			if (strip_end >= screen_height) strip_end = screen_height - 1;
-			Rectangle(hdc, x*strip_width, strip_start, (x + 1) * strip_width, strip_end);
+
+			stripe_rect.left = x*strip_width;
+			stripe_rect.top = strip_start;
+			stripe_rect.right = (x + 1) * strip_width;
+			stripe_rect.bottom = strip_end;
+			
+			SelectObject(hdc, color);
+			Rectangle(hdc, stripe_rect.left, stripe_rect.top, stripe_rect.right, stripe_rect.bottom);
+			FrameRect(hdc, &stripe_rect, color);
 		}
 	}
-
-	return;
 }
 
-void draw_frame(HDC hdc)
+void render_game(HDC hdc)
 {
 	redraw_frame(hdc);
 	float minimap_scale_factor = 0.3F;
@@ -305,7 +332,6 @@ void draw_frame(HDC hdc)
 	render(hdc, scale, world_map);
 	draw_minimap(hdc, scale, world_map);
 }
-
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -350,8 +376,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -462,7 +486,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				PAINTSTRUCT ps;
 				HDC hdc = BeginPaint(hWnd, &ps);
 				// TODO: Add any drawing code that uses hdc here...
-				draw_frame(hdc);
+				render_game(hdc);
 				EndPaint(hWnd, &ps);
 			}
 			break;
