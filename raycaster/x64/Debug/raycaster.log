@@ -1,45 +1,46 @@
 ﻿  raycaster.cpp
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(73,24): warning C4305: 'initializing': truncation from 'double' to 'const float'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(84,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(134,10): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(75,24): warning C4305: 'initializing': truncation from 'double' to 'const float'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(86,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(135,10): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(142,43): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(142,37): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(143,20): warning C4305: '=': truncation from 'double' to 'float'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(149,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(149,21): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(150,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(150,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(213,47): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(213,34): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(197,15): warning C4101: 'pcx': unreferenced local variable
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(197,20): warning C4101: 'pcy': unreferenced local variable
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(136,10): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(143,43): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(143,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(144,20): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(150,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(150,21): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(151,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(151,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(214,47): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(214,34): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(198,9): warning C4101: 'pcx': unreferenced local variable
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(198,14): warning C4101: 'pcy': unreferenced local variable
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(228,28): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(228,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(228,43): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(232,31): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(232,49): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(232,43): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(258,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(259,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(260,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(263,75): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(263,55): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(280,56): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(280,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(282,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(282,26): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(286,114): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(286,88): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(286,62): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(286,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(311,77): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(311,64): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(313,56): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(313,78): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(317,20): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(319,18): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(322,24): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(324,32): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(262,75): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(262,55): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(277,56): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(277,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(279,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(279,26): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(280,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(280,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,114): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,88): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,62): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(306,77): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(306,64): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(308,56): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(308,78): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(314,23): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(315,52): warning C4244: '=': conversion from 'double' to 'LONG', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(316,31): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(317,55): warning C4244: '=': conversion from 'double' to 'LONG', possible loss of data
+  LINK : C:\Users\olaph\Programming\oda\vs-projects\raycaster\x64\Debug\raycaster.exe not found or not built by the last incremental link; performing full link
   raycaster.vcxproj -> C:\Users\olaph\Programming\oda\vs-projects\raycaster\x64\Debug\raycaster.exe
