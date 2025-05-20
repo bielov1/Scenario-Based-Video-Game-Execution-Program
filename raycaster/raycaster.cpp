@@ -1,13 +1,14 @@
 // raycaster.cpp : Defines the entry point for the application.
 //
 
-#include "framework.h"
-#include "raycaster.h"
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <vector>
 
+#include "framework.h"
+#include "raycaster.h"
+#include "Game.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -18,12 +19,16 @@
 
 std::vector<std::vector<int>> world_map = 
 {
-	{0, 0, 3, 2, 1, 3},
-	{0, 0, 0, 0, 2, 0},
-	{0, 0, 0, 2, 3, 0},
-	{0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0},
-	{0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 3, 2, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 0, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 2, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 0, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 0, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 2, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 0, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 2, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 0, 3, 0, 0, 0, 0},
+	{0, 0, 0, 3, 0, 3, 0, 0, 0, 0}
 };
 
 
@@ -38,36 +43,36 @@ public:
 	Vector2(const Vector2& v)
 		: x(v.x), y(v.y) {}
 	Vector2 sub(const Vector2 &that)
-	{ return Vector2(x - that.x, y - that.y); }
+		{ return Vector2(x - that.x, y - that.y); }
 	Vector2 add(const Vector2 &that)
-	{ return Vector2(x + that.x, y + that.y); }
+		{ return Vector2(x + that.x, y + that.y); }
 	Vector2 mul(const Vector2 &that)
-	{ return Vector2(x*that.x, y*that.y); }
+		{ return Vector2(x*that.x, y*that.y); }
 	Vector2 mul(float f)
-	{ return Vector2(x*f, y*f); }
+		{ return Vector2(x*f, y*f); }
 	float length()
-	{ return sqrt(x*x + y*y); }
+		{ return sqrt(x*x + y*y); }
 	Vector2 norm()
-	{ float l = length();
-	if (l == 0) return Vector2(0, 0);
-	return Vector2(x/l, y/l); }
+		{ float l = length();
+	      if (l == 0) return Vector2(0, 0);
+		  return Vector2(x/l, y/l); }
 	Vector2 scale(float f)
-	{ return Vector2(x*f, y*f); }
+		{ return Vector2(x*f, y*f); }
 	float dot(const Vector2 &that)
-	{ return x*that.x + y*that.y; }
+		{ return x*that.x + y*that.y; }
 	Vector2 rot90()
-	{ return Vector2(-y, x); }
+		{ return Vector2(-y, x); }
 	Vector2 rot_minus90()
-	{ return Vector2(y, -x); }
+		{ return Vector2(y, -x); }
 	Vector2 lerp(const Vector2 &that, float t)
-	{ return Vector2(x + t * (that.x - x), y + t * (that.y - y)); }
+		{ return Vector2(x + t * (that.x - x), y + t * (that.y - y)); }
 };
 
 inline Vector2 from_angle(float angle)
-{ return Vector2(cos(angle), sin(angle)); }
+	{ return Vector2(cos(angle), sin(angle)); }
 
 inline Vector2 zero()
-{ return Vector2(0, 0); }
+	{ return Vector2(0, 0); }
 
 
 class Player {
@@ -91,14 +96,14 @@ public:
 
 };
 
-struct Raycast_Result {
+struct Ray_Hit {
 	Vector2 hit_pos;
 	float ray_len;
 	bool hit;
-	Raycast_Result(Vector2 v, float d, bool h) 
+	Ray_Hit(Vector2 v, float d, bool h) 
 		: hit_pos(v), ray_len(d), hit(h) {}
 
-	Raycast_Result()
+	Ray_Hit()
 		: hit_pos(Vector2(0, 0)), ray_len(0.0F), hit(false) {}
 };
 // Global Variables:
@@ -140,7 +145,7 @@ Vector2 map_size(std::vector<std::vector<int>> map)
 void init(HWND hwnd)
 {
 	grid_size = map_size(world_map);
-	player.pos = grid_size.mul(Vector2(0.78, 0.79));
+	player.pos = grid_size.mul(Vector2(0.45, 0.95));
 	player.dir = M_PI * 1.25;
 	SetTimer(hwnd, WM_USER + 1, 1000 / FPS, 0);
 }
@@ -156,7 +161,7 @@ bool inside_map(int cell_x, int cell_y, int cols, int rows)
 	return cell_x >= 0 && cell_x <= cols && cell_y >= 0 && cell_y <= rows;
 }
 
-Raycast_Result cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
+Ray_Hit cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 {
 	float dx = p2.x - p1.x; // ray dirx
 	float dy = p2.y - p1.y; // ray diry
@@ -195,7 +200,6 @@ Raycast_Result cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 
 	int side;
 	while (true) {
-		float pcx, pcy;
 		if (ray_len_x < ray_len_y) {
 			map_check_x += stepx;
 			ray_len_x += sx;
@@ -211,13 +215,13 @@ Raycast_Result cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 			map_check_y >= 0 && map_check_y < rows &&
 			world_map[map_check_y][map_check_x] != 0) {
 			ray_len = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
-			return Raycast_Result(Vector2(map_check_x, map_check_y), ray_len, true);
+			return Ray_Hit(Vector2(map_check_x, map_check_y), ray_len, true);
 		}
 
 		if (!inside_map(map_check_x, map_check_y, cols, rows)) break;
 	}
 
-	return Raycast_Result(Vector2(0, 0), 0.0F, false);
+	return Ray_Hit(Vector2(0, 0), 0.0F, false);
 }
 
 void draw_grid(HDC hdc, int cols, int rows, float scale)
@@ -303,13 +307,13 @@ void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
 	RECT strip_rect;
 	for (int x = 0; x < render_width; x++) {
 		Vector2 p = p1.lerp(p2, x/render_width);
-		Raycast_Result ray_result = cast_ray(player.pos, p, grid_size.x, grid_size.y);
-		if (ray_result.hit) {
-			HBRUSH color = get_wall_brush(map[ray_result.hit_pos.y][ray_result.hit_pos.x]);
+		Ray_Hit ray_hit = cast_ray(player.pos, p, grid_size.x, grid_size.y);
+		if (ray_hit.hit) {
+			HBRUSH color = get_wall_brush(map[ray_hit.hit_pos.y][ray_hit.hit_pos.x]);
 			Vector2 ray_dir = p.sub(player.pos).norm();
 			Vector2 cam_dir = from_angle(player.dir);
-			float dist = ray_result.ray_len * ray_dir.dot(cam_dir);
-			int strip_height = (int)(screen_height / dist);
+			float perp_dist = ray_hit.ray_len * ray_dir.dot(cam_dir);
+			int strip_height = (int)(screen_height / perp_dist);
 
 			strip_rect.left = x*strip_width;
 			strip_rect.top = (screen_height - strip_height) * 0.5;

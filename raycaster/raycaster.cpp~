@@ -18,9 +18,9 @@
 
 std::vector<std::vector<int>> world_map = 
 {
-	{0, 1, 2, 3, 0, 0},
-	{0, 0, 0, 1, 0, 0},
-	{0, 0, 3, 2, 0, 0},
+	{0, 0, 3, 2, 1, 3},
+	{0, 0, 0, 0, 2, 0},
+	{0, 0, 0, 2, 3, 0},
 	{0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0},
 	{0, 0, 0, 0, 0, 0},
@@ -53,6 +53,8 @@ public:
 		  return Vector2(x/l, y/l); }
 	Vector2 scale(float f)
 		{ return Vector2(x*f, y*f); }
+	float dot(const Vector2 &that)
+		{ return x*that.x + y*that.y; }
 	Vector2 rot90()
 		{ return Vector2(-y, x); }
 	Vector2 rot_minus90()
@@ -61,8 +63,8 @@ public:
 		{ return Vector2(x + t * (that.x - x), y + t * (that.y - y)); }
 };
 
-inline Vector2 from_angle(float d)
-	{ return Vector2(cos(d), sin(d)); }
+inline Vector2 from_angle(float angle)
+	{ return Vector2(cos(angle), sin(angle)); }
 
 inline Vector2 zero()
 	{ return Vector2(0, 0); }
@@ -79,7 +81,7 @@ public:
 		: pos(p), dir(d) {}
 	Player()
 		: pos(zero()), dir(0.0F) {}
-	void fov_range(Vector2& out_p1, Vector2& out_p2, float FOV)
+	void fov_range(Vector2& out_p1, Vector2& out_p2)
 	{
 		float l = tan(FOV*0.5);
 		Vector2 p = pos.add(from_angle(dir));
@@ -89,15 +91,15 @@ public:
 
 };
 
-struct Raycast_Result {
+struct Ray_Hit {
 	Vector2 hit_pos;
-	float perp_dist;
+	float ray_len;
 	bool hit;
-	Raycast_Result(Vector2 v, float d, bool h) 
-		: hit_pos(v), perp_dist(d), hit(h) {}
-		
-	Raycast_Result()
-		: hit_pos(Vector2(0, 0)), perp_dist(0.0F), hit(false) {}
+	Ray_Hit(Vector2 v, float d, bool h) 
+		: hit_pos(v), ray_len(d), hit(h) {}
+
+	Ray_Hit()
+		: hit_pos(Vector2(0, 0)), ray_len(0.0F), hit(false) {}
 };
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -114,9 +116,8 @@ const int FPS = 20;
 
 
 HPEN red_pen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
-HBRUSH green_brush = CreateSolidBrush(RGB(0, 255, 0));
+HBRUSH green_player_brush = CreateSolidBrush(RGB(0, 255, 0));
 HBRUSH bg_brush = CreateSolidBrush(RGB(18, 18, 18));
-HBRUSH blue_brush = CreateSolidBrush(RGB(0, 0, 255));
 HBRUSH blue_wall_brush = CreateSolidBrush(RGB(0, 0, 255));
 HBRUSH red_wall_brush = CreateSolidBrush(RGB(255, 0, 0));
 HBRUSH green_wall_brush = CreateSolidBrush(RGB(0, 255, 0));
@@ -128,7 +129,6 @@ int on_timer(HWND hwnd)
 	InvalidateRect(hwnd, NULL, FALSE);
 	return 0;
 }
-
 
 Vector2 map_size(std::vector<std::vector<int>> map)
 {
@@ -156,70 +156,68 @@ bool inside_map(int cell_x, int cell_y, int cols, int rows)
 	return cell_x >= 0 && cell_x <= cols && cell_y >= 0 && cell_y <= rows;
 }
 
-Raycast_Result cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
+Ray_Hit cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
 {
-    float dx = p2.x - p1.x; // ray dirx
-    float dy = p2.y - p1.y; // ray diry
-    
-    int stepx = 0;
-    int stepy = 0;
+	float dx = p2.x - p1.x; // ray dirx
+	float dy = p2.y - p1.y; // ray diry
 
-    if (dx == 0) dx = 1e-6f;
-    if (dy == 0) dy = 1e-6f;
+	int stepx = 0;
+	int stepy = 0;
 
-    float sx = sqrt(1 + (dy*dy)/(dx*dx));
-    float sy = sqrt(1 + (dx*dx)/(dy*dy));
-	float perp_dist;
+	if (dx == 0) dx = 1e-6f;
+	if (dy == 0) dy = 1e-6f;
 
-    float ray_len_x = 0;
-    float ray_len_y = 0;
-    
-    int map_check_x = int(p1.x);
-    int map_check_y = int(p1.y);
+	float sx = sqrt(1 + (dy*dy)/(dx*dx));
+	float sy = sqrt(1 + (dx*dx)/(dy*dy));
+	float ray_len;
 
-    if (dx < 0) {
-        stepx = -1;
-        ray_len_x = (p1.x - float(map_check_x)) * sx;
-    } else {
-        stepx = 1;
-        ray_len_x = (float(map_check_x + 1) - p1.x) * sx;
-    }
+	float ray_len_x = 0;
+	float ray_len_y = 0;
 
-    if (dy < 0) {
-        stepy = -1;
-        ray_len_y = (p1.y - float(map_check_y)) * sy;
-    } else {
-        stepy = 1;
-        ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
-    }
+	int map_check_x = int(p1.x);
+	int map_check_y = int(p1.y);
+
+	if (dx < 0) {
+		stepx = -1;
+		ray_len_x = (p1.x - float(map_check_x)) * sx;
+	} else {
+		stepx = 1;
+		ray_len_x = (float(map_check_x + 1) - p1.x) * sx;
+	}
+
+	if (dy < 0) {
+		stepy = -1;
+		ray_len_y = (p1.y - float(map_check_y)) * sy;
+	} else {
+		stepy = 1;
+		ray_len_y = (float(map_check_y + 1) - p1.y) * sy;
+	}
 
 	int side;
-    while (true) {
-        float pcx, pcy;
-        if (ray_len_x < ray_len_y) {
-            map_check_x += stepx;
-            ray_len_x += sx;
+	while (true) {
+		if (ray_len_x < ray_len_y) {
+			map_check_x += stepx;
+			ray_len_x += sx;
 			side = 0;
 
-        } else {
-            map_check_y += stepy;
-            ray_len_y += sy;
+		} else {
+			map_check_y += stepy;
+			ray_len_y += sy;
 			side = 1;
-        }
+		}
 
-        if (map_check_x >= 0 && map_check_x < cols && 
-		    map_check_y >= 0 && map_check_y < rows &&
-		    world_map[map_check_y][map_check_x] != 0) {
-			perp_dist = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
-			return Raycast_Result(Vector2(map_check_x, map_check_y), perp_dist, true);
-        }
+		if (map_check_x >= 0 && map_check_x < cols && 
+			map_check_y >= 0 && map_check_y < rows &&
+			world_map[map_check_y][map_check_x] != 0) {
+			ray_len = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
+			return Ray_Hit(Vector2(map_check_x, map_check_y), ray_len, true);
+		}
 
 		if (!inside_map(map_check_x, map_check_y, cols, rows)) break;
-    }
+	}
 
-	return Raycast_Result(Vector2(0, 0), 0.0F, false);
+	return Ray_Hit(Vector2(0, 0), 0.0F, false);
 }
-
 
 void draw_grid(HDC hdc, int cols, int rows, float scale)
 {
@@ -233,7 +231,6 @@ void draw_grid(HDC hdc, int cols, int rows, float scale)
 		stroke_line(hdc, Vector2(0, y), Vector2(rows, y), scale);
 	}
 }
-
 
 HBRUSH get_wall_brush(int wall)
 {
@@ -267,8 +264,6 @@ void fill_walls(HDC hdc, int cols, int rows, float scale, std::vector<std::vecto
 	}
 }
 
-
-
 void redraw_frame(HDC hdc)
 {
 	SelectObject(hdc, bg_brush);
@@ -282,10 +277,10 @@ void draw_minimap(HDC hdc, float scale, std::vector<std::vector<int>> map)
 
 	draw_grid(hdc, grid_size.x, grid_size.y, scale);
 	fill_walls(hdc, grid_size.x, grid_size.y, scale, map);
-    
-	SelectObject(hdc, green_brush);
+
+	SelectObject(hdc, green_player_brush);
 	Ellipse(hdc, player.pos.x * scale - r, player.pos.y * scale - r, player.pos.x * scale + r, player.pos.y * scale + r);
-	
+
 	//drawing camera
 	Vector2 p1;
 	Vector2 p2;
@@ -293,8 +288,6 @@ void draw_minimap(HDC hdc, float scale, std::vector<std::vector<int>> map)
 	stroke_line(hdc, p1, p2, scale);
 	stroke_line(hdc, player.pos, p1, scale);
 	stroke_line(hdc, player.pos, p2, scale);
-	
-	return;
 }
 
 void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
@@ -306,32 +299,27 @@ void render(HDC hdc, float scale, std::vector<std::vector<int>> map)
 
 	float render_width = 100.0F;
 	float strip_width = screen_width/render_width;
-	RECT stripe_rect;
+	RECT strip_rect;
 	for (int x = 0; x < render_width; x++) {
 		Vector2 p = p1.lerp(p2, x/render_width);
-		Raycast_Result ray_result = cast_ray(player.pos, p, grid_size.x, grid_size.y);
-		if (ray_result.hit) {
-			HBRUSH color = get_wall_brush(map[ray_result.hit_pos.y][ray_result.hit_pos.x]);
+		Ray_Hit ray_hit = cast_ray(player.pos, p, grid_size.x, grid_size.y);
+		if (ray_hit.hit) {
+			HBRUSH color = get_wall_brush(map[ray_hit.hit_pos.y][ray_hit.hit_pos.x]);
+			Vector2 ray_dir = p.sub(player.pos).norm();
+			Vector2 cam_dir = from_angle(player.dir);
+			float perp_dist = ray_hit.ray_len * ray_dir.dot(cam_dir);
+			int strip_height = (int)(screen_height / perp_dist);
 
-			//fisheye is not being fixed
-			int strip_height = (int)(screen_height / ray_result.perp_dist);
-			int strip_start = (screen_height - strip_height) * 0.5;
-			if (strip_start < 0) strip_start = 0;
-			int strip_end = (screen_height + strip_height) * 0.5;
-			if (strip_end >= screen_height) strip_end = screen_height - 1;
+			strip_rect.left = x*strip_width;
+			strip_rect.top = (screen_height - strip_height) * 0.5;
+			strip_rect.right = (x + 1) * strip_width;
+			strip_rect.bottom = (screen_height + strip_height) * 0.5;
 
-			stripe_rect.left = x*strip_width;
-			stripe_rect.top = strip_start;
-			stripe_rect.right = (x + 1) * strip_width;
-			stripe_rect.bottom = strip_end;
-			
 			SelectObject(hdc, color);
-			Rectangle(hdc, stripe_rect.left, stripe_rect.top, stripe_rect.right, stripe_rect.bottom);
-			FrameRect(hdc, &stripe_rect, color);
+			Rectangle(hdc, strip_rect.left, strip_rect.top, strip_rect.right, strip_rect.bottom);
+			FrameRect(hdc, &strip_rect, color);
 		}
 	}
-
-	return;
 }
 
 void render_game(HDC hdc)
@@ -343,7 +331,6 @@ void render_game(HDC hdc)
 	draw_minimap(hdc, scale, world_map);
 }
 
-
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -351,44 +338,42 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
+	// TODO: Place code here.
 
-    // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_RAYCASTER, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+	// Initialize global strings
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_RAYCASTER, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hInstance);
 
-    // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+	// Perform application initialization:
+	if (!InitInstance (hInstance, nCmdShow))
+	{
+		return FALSE;
+	}
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_RAYCASTER));
 
-    MSG msg;
+	MSG msg;
 
-    // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
+	// Main message loop:
+	while (GetMessage(&msg, nullptr, 0, 0))
+	{
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
 
-    return (int) msg.wParam;
+	return (int) msg.wParam;
 }
-
-
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -397,23 +382,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+	WNDCLASSEXW wcex;
 
-    wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_RAYCASTER));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = CreateSolidBrush(RGB(18, 18, 18));
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_RAYCASTER);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.style          = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc    = WndProc;
+	wcex.cbClsExtra     = 0;
+	wcex.cbWndExtra     = 0;
+	wcex.hInstance      = hInstance;
+	wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_RAYCASTER));
+	wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground  = CreateSolidBrush(RGB(18, 18, 18));
+	wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_RAYCASTER);
+	wcex.lpszClassName  = szWindowClass;
+	wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    return RegisterClassExW(&wcex);
+	return RegisterClassExW(&wcex);
 }
 
 //
@@ -437,13 +422,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	AdjustWindowRect(&window_rect,  WS_OVERLAPPEDWINDOW, TRUE);
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-			0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, hInstance, nullptr);
+		0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, hInstance, nullptr);
 
 	if (hWnd == 0)
 	{
 		return FALSE;
 	}
-	
+
 	init(hWnd);
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -465,54 +450,54 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-		case WM_KEYDOWN:
-			{
-				if (wParam == 'S')
-					player.pos = player.pos.sub(from_angle(player.dir).mul(move_speed));
-				else if (wParam == 'W')
-					player.pos = player.pos.add(from_angle(player.dir).mul(move_speed));
-				else if (wParam == VK_LEFT)
-					player.dir -= rotation_speed;
-				else if (wParam == VK_RIGHT)
-					player.dir += rotation_speed;
-			}
+	case WM_KEYDOWN:
+	{
+		if (wParam == 'S')
+			player.pos = player.pos.sub(from_angle(player.dir).mul(move_speed));
+		else if (wParam == 'W')
+			player.pos = player.pos.add(from_angle(player.dir).mul(move_speed));
+		else if (wParam == VK_LEFT)
+			player.dir -= rotation_speed;
+		else if (wParam == VK_RIGHT)
+			player.dir += rotation_speed;
+	}
+	break;
+	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId)
+		{
+		case IDM_ABOUT:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
-		case WM_COMMAND:
-			{
-				int wmId = LOWORD(wParam);
-				// Parse the menu selections:
-				switch (wmId)
-				{
-					case IDM_ABOUT:
-						DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-						break;
-					case IDM_EXIT:
-						DestroyWindow(hWnd);
-						break;
-					default:
-						return DefWindowProc(hWnd, message, wParam, lParam);
-				}
-			}
-			break;
-		case WM_PAINT:
-			{
-				PAINTSTRUCT ps;
-				HDC hdc = BeginPaint(hWnd, &ps);
-				// TODO: Add any drawing code that uses hdc here...
-				render_game(hdc);
-				EndPaint(hWnd, &ps);
-			}
-			break;
-		case WM_TIMER:
-			if (wParam == WM_USER + 1)
-				return on_timer(hWnd);
-			break;
-		case WM_DESTROY:
-			KillTimer(hWnd, WM_USER + 1);
-			PostQuitMessage(0);
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		// TODO: Add any drawing code that uses hdc here...
+		render_game(hdc);
+		EndPaint(hWnd, &ps);
+	}
+	break;
+	case WM_TIMER:
+		if (wParam == WM_USER + 1)
+			return on_timer(hWnd);
+		break;
+	case WM_DESTROY:
+		KillTimer(hWnd, WM_USER + 1);
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
@@ -523,16 +508,16 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
-		case WM_INITDIALOG:
-			return (INT_PTR)TRUE;
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
 
-		case WM_COMMAND:
-			if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-			{
-				EndDialog(hDlg, LOWORD(wParam));
-				return (INT_PTR)TRUE;
-			}
-			break;
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
 	}
 	return (INT_PTR)FALSE;
 }
