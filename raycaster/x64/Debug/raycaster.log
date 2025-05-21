@@ -1,56 +1,20 @@
-﻿  raycaster.cpp
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(78,7): error C2011: 'Player': 'class' type redefinition
-      C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(4,7):
-      see declaration of 'Player'
+﻿  Game.cpp
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(9,24): warning C4305: 'initializing': truncation from 'double' to 'const float'
+  (compiling source file 'Game.cpp')
   
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(114,8): error C2079: 'player' uses undefined class 'Player'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(140,10): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(141,10): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(148,43): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(148,37): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(155,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(155,21): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(156,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(156,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(218,40): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(218,27): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(232,28): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(232,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(232,43): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(236,31): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(236,49): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(236,43): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(262,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(263,20): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(266,75): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(266,55): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(281,56): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(281,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(283,26): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(284,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(284,27): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(287,2): error C2660: 'Ellipse': function does not take 1 arguments
-      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\wingdi.h(4001,24):
-      see declaration of 'Ellipse'
-      C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(287,2):
-      while trying to match the argument list '(HDC)'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(29,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'Game.cpp')
   
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(294,2): error C2660: 'stroke_line': function does not take 3 arguments
-      C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(153,6):
-      see declaration of 'stroke_line'
-      C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(294,2):
-      while trying to match the argument list '(HDC, Vector2, float)'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\InteractionEvent.h(15,26): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Game.cpp')
   
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(295,2): error C2660: 'stroke_line': function does not take 3 arguments
-      C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(153,6):
-      see declaration of 'stroke_line'
-      C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(295,2):
-      while trying to match the argument list '(HDC, Vector2, float)'
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\InteractionEvent.h(27,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Game.cpp')
   
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(312,53): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(312,72): warning C4244: 'argument': conversion from 'float' to 'const unsigned __int64', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(318,23): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(319,52): warning C4244: '=': conversion from 'double' to 'LONG', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(320,31): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\raycaster.cpp(321,55): warning C4244: '=': conversion from 'double' to 'LONG', possible loss of data
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\BreakwallAction.h(15,26): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Game.cpp')
+  
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\BreakwallAction.h(25,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Game.cpp')
+  
+  raycaster.vcxproj -> C:\Users\olaph\Programming\oda\vs-projects\raycaster\x64\Debug\raycaster.exe

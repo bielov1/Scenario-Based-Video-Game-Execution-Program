@@ -12,16 +12,16 @@ public:
 			<< arg
 			<< std::endl;
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		std::cout << "changing Player.moving to: "
 			<< arg
 			<< std::endl;
 
-		game.playerInstance().moving = arg;
+		game.raycaster.playerInstance().moving = arg;
 
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		return true;
 	}
@@ -39,16 +39,16 @@ public:
 			<< arg
 			<< std::endl;
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		std::cout << "changing Player.moving to: "
 			<< arg
 			<< std::endl;
 
-		game.playerInstance().moving = arg;
+		game.raycaster.playerInstance().moving = arg;
 
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		return true;
 	}
@@ -66,16 +66,16 @@ public:
 			<< arg
 			<< std::endl;
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		std::cout << "changing Player.moving to: "
 			<< arg
 			<< std::endl;
 
-		game.playerInstance().moving = arg;
+		game.raycaster.playerInstance().moving = arg;
 
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		return true;
 	}
@@ -93,16 +93,16 @@ public:
 			<< arg
 			<< std::endl;
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 		std::cout << "changing Player.moving to: "
 			<< arg
 			<< std::endl;
 
-		game.playerInstance().moving = arg;
+		game.raycaster.playerInstance().moving = arg;
 
 		std::cout << "current Player property (moving): "
-			<< game.playerInstance().moving
+			<< game.raycaster.playerInstance().moving
 			<< std::endl;
 	}
 };

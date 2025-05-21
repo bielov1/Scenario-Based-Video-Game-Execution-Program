@@ -1,10 +1,38 @@
 #include "Game.h"
-
 #include "InteractionEvent.h"
 #include "KeyboardEvent.h"
 #include "ObjectEvent.h"
 #include "BreakwallAction.h"
 #include "AnyCondition.h"
+
+
+
+Game::Game()
+	: Hwnd(0), scenario_path(""), content("")
+{
+}
+
+void Game::init_game(HWND hwnd, std::string path)
+{
+	Hwnd = hwnd;
+	scenario_path = path;
+
+	AsConfig::setup_colors();
+	raycaster.init(Hwnd);
+	get_content();
+
+	lexer.init(content, static_cast<std::size_t>(content.length()));
+	Token t;
+	for(;;) {
+		t = lexer.next_token();
+		if (t.kind == Token_Kind::END) break;
+		tokens.push_back(t);
+	}
+
+	parse();
+	//check_events();
+	//clear_statuses();
+}
 
 std::string token_kind_name(Token_Kind kind)
 {
@@ -36,33 +64,6 @@ std::string token_kind_name(Token_Kind kind)
 	return nullptr;
 }
 
-Game::Game(std::string path)
-	: scenario_path(path), content("")
-{
-	init();
-}
-
-void Game::init()
-{
-	player_.init(100, 5, "");
-	wall_.init(5);
-
-	get_content();
-
-	lexer.init(content, static_cast<std::size_t>(content.length()));
-	Token t;
-	for(;;) {
-		t = lexer.next_token();
-		if (t.kind == Token_Kind::END) break;
-		std::cout << t.text << " (" << token_kind_name(t.kind) << ") " << std::endl; 
-		tokens.push_back(t);
-	}
-
-	parse();
-	check_events();
-	clear_statuses();
-}
-
 void Game::get_content()
 {
 	std::ifstream scen(scenario_path);
@@ -90,9 +91,6 @@ bool Game::verify_all_conditions_in_map(Event_Type e)
 
 void Game::clear_statuses()
 {
-	//events_status;
-	//conditions_status_for_event_type;
-
 	for (auto& pair : conditions_status_for_event_type) {
 		pair.second.clear();
 	}
@@ -178,10 +176,11 @@ void Game::parse()
 			++i;
 		} else if (tokens[i].kind == Token_Kind::ACTION_BREAKWALL) {
 			Event_Type last_parsed_event = event_container.back();
+			std::string arg = tokens[i+1].text;
 			action_container.push_back(Action_Type::BREAKWALL);
 			event_action_map[last_parsed_event].push_back(Action_Type::BREAKWALL);
-			RegisterBreakwallActionType(this, Action_Type::BREAKWALL, BreakwallAction::act);
-			++i;
+			RegisterBreakwallActionType(this, Action_Type::BREAKWALL, BreakwallAction::act, arg);
+			i += 2;
 
 		} else {
 			std::cerr << "uknown kind of token\n.";
@@ -190,9 +189,3 @@ void Game::parse()
 
 	}
 }
-
-Player& Game::playerInstance()
-{ return player_;}
-
-Wall& Game::wallInstance()
-{ return wall_; }

@@ -1,0 +1,3 @@
+interaction player bluewall
+	any
+		breakwall bluewall

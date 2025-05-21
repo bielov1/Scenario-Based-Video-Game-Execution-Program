@@ -3,11 +3,11 @@
 #include <memory>
 #include "Action.h"
 
-#define RegisterBreakwallActionType(gamePtr, type, func)				\
+#define RegisterBreakwallActionType(gamePtr, type, func, arg)			\
 	ActionHandler::GetInstance()->actions.register_action(				\
 		type,															\
-		[gamePtr]() {													\
-			return func(*gamePtr);										\
+		[gamePtr, arg]() {												\
+			return func(*gamePtr, arg);									\
 		}																\
 	)	
 #define RemoveActionDispatcher(type)									\
