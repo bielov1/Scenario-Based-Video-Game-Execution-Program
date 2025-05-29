@@ -95,15 +95,9 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	hInst = hInstance; // Store instance handle in our global variable
-	RECT  window_rect;
-	window_rect.left   = 0;
-	window_rect.top    = 0;
-	window_rect.bottom = screen_height;
-	window_rect.right  = screen_width;
 
-	AdjustWindowRect(&window_rect,  WS_OVERLAPPEDWINDOW, TRUE);
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-		0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, hInstance, nullptr);
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
 	if (hWnd == 0)
 	{
@@ -131,6 +125,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
+	case WM_SIZE:
+	{
+		RECT ClientRect;
+		GetClientRect(hWnd, &ClientRect);
+		game.screen_width = ClientRect.right - ClientRect.left;
+		game.screen_height = ClientRect.bottom - ClientRect.top;
+		game.ResizeDIBSection();
+	}
+	break;
 	case WM_KEYDOWN:
 	{
 		if (wParam == 'S')
@@ -167,13 +170,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code that uses hdc here...
-		game.raycaster.render_game(hdc);
+		RECT ClientRect;
+		GetClientRect(hWnd, &ClientRect);
+		int screen_width = ClientRect.right - ClientRect.left;
+		int screen_height = ClientRect.bottom - ClientRect.top;
+		if (screen_width <= 0 || screen_height <= 0) {
+			EndPaint(hWnd, &ps);
+			break;
+		}
+		
+		void* render_result = game.raycaster.render_frame(screen_width, screen_height);
+		if (render_result)
+		{
+			memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
+			delete[] static_cast<Pixel*>(render_result);
+		}
+		game.DisplayBufferToWindow(hdc, ClientRect);
 		EndPaint(hWnd, &ps);
 	}
 	break;
 	case WM_TIMER:
 		if (wParam == WM_USER + 1)
-			return game.raycaster.on_timer(hWnd);
+			return game.on_timer();
 		break;
 	case WM_DESTROY:
 		KillTimer(hWnd, WM_USER + 1);

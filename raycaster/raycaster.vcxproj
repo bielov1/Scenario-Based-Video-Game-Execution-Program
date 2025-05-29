@@ -133,7 +133,6 @@
     <ClInclude Include="BreakwallAction.h" />
     <ClInclude Include="Condition.h" />
     <ClInclude Include="ConditionHandler.h" />
-    <ClInclude Include="Config.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="framework.h" />
@@ -154,7 +153,6 @@
   <ItemGroup>
     <ClCompile Include="ActionHandler.cpp" />
     <ClCompile Include="ConditionHandler.cpp" />
-    <ClCompile Include="Config.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Lexer.cpp" />

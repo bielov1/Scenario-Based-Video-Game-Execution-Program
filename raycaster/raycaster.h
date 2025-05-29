@@ -2,12 +2,8 @@
 #include <string>
 #include <vector>
 #include "Vector2.h"
-#include "Config.h"
 #include "Player.h"
 #include "WorldMap.h"
-
-#define screen_width    800
-#define screen_height   600
 
 struct Ray_Hit {
 	Vector2 hit_pos;
@@ -20,23 +16,28 @@ struct Ray_Hit {
 		: hit_pos(Vector2(0, 0)), ray_len(0.0F), hit(false) {}
 };
 
+struct Pixel {
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+};
+
+typedef Pixel* Pixels;
+
+
 class Player;
 
 class Raycaster
 {
 public:
 	Raycaster();
-	void init(HWND hwnd);
-	int on_timer(HWND hwnd);
-	void stroke_line(HDC hdc, const Vector2 &p1, const Vector2 &p2, float scale);
+	void init();
 	bool inside_map(int cell_x, int cell_y, int cols, int rows);
 	Ray_Hit cast_ray(Vector2& p1, Vector2& p2, int cols, int rows);
-	void draw_grid(HDC hdc, int cols, int rows, float scale);
-	void fill_walls(HDC hdc, int cols, int rows, float scale);
-	void redraw_frame(HDC hdc);
-	void draw_minimap(HDC hdc, Player& player, float scale);
-	void render(HDC hdc, Player& player, float scale);
-	void render_game(HDC hdc);
+	void clear_frame(Pixel *pixels, int screen_width, int screen_height);
+	void draw_frame(Pixel* pixels, Player& player, int screen_width, int screen_height);
+	void* render_frame(int screen_width, int screen_height);
 
 	Player& playerInstance();
 	WorldMap& worldmapInstance();

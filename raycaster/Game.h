@@ -13,7 +13,6 @@
 #include "EventHandler.h"
 #include "ConditionHandler.h"
 #include "ActionHandler.h"
-#include "Vector2.h"
 
 
 class InteractionEvent;
@@ -23,6 +22,16 @@ class KeyboardLEFTEvent;
 class KeyboardRIGHTEvent;
 class ObjectEvent;
 class BreakwallAction;
+
+struct Back_Buffer
+{
+	BITMAPINFO info;
+	void* memory;
+	int width;
+	int height;
+	int bytes_per_pixel;
+};
+
 
 //-------------------------------------------------
 class Game
@@ -36,7 +45,11 @@ private:
 public:
 	Game();
 
+	void ResizeDIBSection();
+	void DisplayBufferToWindow(HDC hdc, RECT window_rect);
+
 	void init_game(HWND hwnd, std::string path);
+	int on_timer();
 	void get_content();
 	bool verify_all_conditions_in_map(Event_Type e);
 	void clear_statuses();
@@ -53,8 +66,17 @@ public:
 	std::map<Event_Type, bool> events_status;
 	std::map<Event_Type, std::vector<bool>> conditions_status_for_event_type;
 
+	static const int FPS = 60;
+
+	int screen_width;
+	int screen_height;
+
+	Back_Buffer frame_buffer;
+
 	HWND Hwnd;
 	Lexer lexer;
 	Raycaster raycaster;
+
+
 };
 

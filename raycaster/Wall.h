@@ -1,15 +1,17 @@
 #pragma once
+#include <Windows.h>
 #include <string>
-#include "Config.h"
 #include "Vector2.h"
 
 class Wall
 {
 public:
 	Vector2 pos;
-	HBRUSH wall_color;
+	COLORREF rgb_color;
 	bool render;
-	Wall(Vector2 p, HBRUSH wcolor, bool render) :
-		pos(p), wall_color(wcolor), render(render)
+	Wall(Vector2 p,  COLORREF rgb, bool render) :
+		pos(p),  rgb_color(rgb), render(render)
 	{}
+	COLORREF get_rgb_color()
+	{ return rgb_color; }
 };
