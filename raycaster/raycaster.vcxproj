@@ -140,6 +140,7 @@
     <ClInclude Include="InteractionEvent.h" />
     <ClInclude Include="KeyboardEvent.h" />
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="NoneCondition.h" />
     <ClInclude Include="ObjectEvent.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Main.h" />

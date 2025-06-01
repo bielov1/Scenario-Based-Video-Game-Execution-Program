@@ -3,7 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <queue>
+#include <stack>
 #include <algorithm>
 #include "Raycaster.h"
 #include "Lexer.h"
@@ -23,6 +23,14 @@ class KeyboardRIGHTEvent;
 class ObjectEvent;
 class BreakwallAction;
 
+enum class Scenario_Level
+{
+	ZERO,
+	EVENT,
+	CONDITION,
+	ACTION
+};
+
 struct Back_Buffer
 {
 	BITMAPINFO info;
@@ -31,6 +39,23 @@ struct Back_Buffer
 	int height;
 	int bytes_per_pixel;
 };
+
+
+struct Node
+{
+	int id;
+	bool active;
+	Scenario_Level level;
+	Node* lact_node;
+	Node* rcond_node;
+	Node()
+		: id(-1), active(false), level(Scenario_Level::ZERO), lact_node(nullptr), rcond_node(nullptr) {}
+	Node(int id, bool active, Scenario_Level l)
+		: id(id), active(active), level(l), lact_node(nullptr), rcond_node(nullptr) {}
+};
+
+typedef Node* Scenario_Branch;
+typedef Node* Branch_Node;
 
 
 //-------------------------------------------------
@@ -51,20 +76,13 @@ public:
 	void init_game(HWND hwnd, std::string path);
 	int on_timer();
 	void get_content();
-	bool verify_all_conditions_in_map(Event_Type e);
-	void clear_statuses();
-	void check_events();
+	void execute_actions(Node* action_branch);
+	void reset_branches();
+	void validate_branches();
+	void add_node_to_branch(Scenario_Branch branch, Branch_Node node);
 	void parse();
 
-	std::vector<Event_Type> event_container;
-	std::vector<Cond_Type> condition_container;
-	std::vector<Action_Type> action_container;
-
-	std::map<Event_Type, std::vector<Cond_Type>> event_condition_map;
-	std::map<Event_Type, std::vector<Action_Type>> event_action_map;
-
-	std::map<Event_Type, bool> events_status;
-	std::map<Event_Type, std::vector<bool>> conditions_status_for_event_type;
+	std::vector<Scenario_Branch> scenario;
 
 	static const int FPS = 60;
 

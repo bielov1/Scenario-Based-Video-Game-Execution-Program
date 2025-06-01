@@ -90,6 +90,9 @@
     <ClInclude Include="WorldMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NoneCondition.h">
+      <Filter>Conditions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

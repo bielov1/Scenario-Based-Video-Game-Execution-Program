@@ -6,7 +6,7 @@
 
 class Player {
 private:
-	const float FOV = M_PI/2;
+	const double FOV = M_PI/2;
 public:
 	Vector2 pos;
 	float dir;
@@ -26,7 +26,7 @@ public:
 	}
 	void fov_range(Vector2& out_p1, Vector2& out_p2)
 	{
-		float l = tan(FOV*0.5);
+		double l = tan(FOV*0.5);
 		Vector2 p = pos.add(from_angle(dir));
 		out_p1 = p.sub(pos).rot_minus90().add(p).scale(l);
 		out_p2 = p.sub(pos).rot90().add(p).scale(l);

@@ -14,6 +14,7 @@ enum class Token_Kind
 	EVENT_OBJECT,
 	EVENT_KEYBOARD,
 	COND_ANY,
+	COND_NONE,
 	ACTION_SUB,
 	ACTION_BREAKWALL,
 
@@ -47,6 +48,7 @@ private:
 		{"object", Token_Kind::EVENT_OBJECT},
 		{"keyboard", Token_Kind::EVENT_KEYBOARD},
 		{"any", Token_Kind::COND_ANY},
+		{"none", Token_Kind::COND_NONE},
 		{"sub", Token_Kind::ACTION_SUB},
 		{"breakwall", Token_Kind::ACTION_BREAKWALL}
 	};

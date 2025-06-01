@@ -31,16 +31,19 @@ class ActionRegistry
 {
 private:
 	using func = std::function<void()>;
-	std::map<T, func> registry;
+	std::map<int, std::pair<T, func>> registry;
+	int register_id = 0;
 public:
-	void register_action(T type, const func& f)
+	int register_action(T type, const func& f)
 	{
-		registry.insert(std::make_pair(type, f));
+		int id = register_id++;
+		registry[id] = {type, f};
+		return id;
 	}
 
-	void delete_action(T type)
+	void delete_action(int id)
 	{
-		auto it = registry.find(type);
+		auto it = registry.find(id);
 		if (it != registry.end())
 		{
 			registry.erase(it);
@@ -49,12 +52,12 @@ public:
 		}
 	}
 
-	void execute(T type)
+	void execute_action(int id)
 	{
-		auto it = registry.find(type);
+		auto it = registry.find(id);
 		if (it != registry.end())
 		{
-			it->second();
+			it->second.second();
 		} else {
 			std::cerr << " dispatch didn't work.\n";
 		}

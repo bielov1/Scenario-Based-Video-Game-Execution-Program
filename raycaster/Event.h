@@ -32,34 +32,37 @@ public:
 };
 
 template <typename T>
-class EventDispatcher
+class EventRegistry
 {
 private:
 	using func = std::function<void()>;
-	std::map<T, func> listener;
+	std::map<int, std::pair<T, func>> registry;
+	int handle_id = 0;
 public:
-	void add_listener(T type, const func& f)
+	int register_event(T type, const func& f)
 	{
-		listener.insert(std::make_pair(type, f));
+		int id = handle_id++;
+		registry[id] = {type, f};
+		return id;
 	}
 
-	void remove_listener(T type)
+	void delete_event(int id)
 	{
-		auto it = listener.find(type);
-		if (it != listener.end())
+		auto it = registry.find(id);
+		if (it != registry.end())
 		{
-			listener.erase(it);
+			registry.erase(it);
 		} else {
 			std::cerr << "remove_listener didn't work.";
 		}
 	}
 
-	void dispatch(T type)
+	void validate_event(int id)
 	{
-		auto it = listener.find(type);
-		if (it != listener.end())
+		auto it = registry.find(id);
+		if (it != registry.end())
 		{
-			it->second();
+			it->second.second();
 		} else {
 			std::cerr << " dispatch didn't work.\n";
 		}

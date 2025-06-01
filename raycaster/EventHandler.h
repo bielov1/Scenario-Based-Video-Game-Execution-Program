@@ -2,37 +2,6 @@
 #include <memory>
 #include "Event.h"
 
-#define AddInteractionEventListener(gamePtr, type, func, arg1, arg2)	\
-	EventHandler::GetInstance()->events.add_listener(					\
-		type,															\
-		[gamePtr, arg1, arg2]() {										\
-			return func(*gamePtr, arg1, arg2);							\
-		}																\
-	)	
-
-#define AddObjectEventListener(gamePtr, type, func, arg1)				\
-	EventHandler::GetInstance()->events.add_listener(					\
-		type,															\
-		[gamePtr, arg1]() {												\
-			return func(*gamePtr, arg1);								\
-		}																\
-	)
-
-#define AddKeyboardEventListener(gamePtr,type, func, arg1)				\
-	EventHandler::GetInstance()->events.add_listener(					\
-		type,															\
-		[gamePtr, arg1]() {												\
-			return func(*gamePtr, arg1);								\
-		}																\
-	)
-
-#define RemoveEventListener(type) \
-	EventHandler::GetInstance()->events.remove_listener(type)
-
-#define DispatchEvent(type) \
-	EventHandler::GetInstance()->events.dispatch(type)
-
-
 class EventHandler
 {
 private:
@@ -41,5 +10,33 @@ public:
 	EventHandler() 
 		: events() {}
 	static EventHandler* GetInstance();
-	EventDispatcher<Event_Type> events;
+	EventRegistry<Event_Type> events;
 };
+
+template<typename Game, typename Node, typename Type, typename Func>
+inline int RegisterEvent(Game* game, Node* node, Type type, Func func, std::string arg1, std::string arg2) {
+	return (EventHandler::GetInstance()->events.register_event(
+		type,
+		[game, node, func, arg1, arg2]() {
+			return func(game, node, arg1, arg2);
+		}
+	));
+}
+
+template<typename Game, typename Node, typename Type, typename Func>
+inline int RegisterEvent(Game* game, Node* node, Type type, Func func, std::string arg1) {
+	return (EventHandler::GetInstance()->events.register_event(
+		type,
+		[game, node, func, arg1]() {
+			return func(game, node, arg1);
+		}
+	));
+}
+
+inline void DeleteEvent(int id) {
+	EventHandler::GetInstance()->events.delete_event(id);
+}
+
+inline void ValidateEvent(int id) {
+	EventHandler::GetInstance()->events.validate_event(id);
+}

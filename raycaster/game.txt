@@ -1,3 +1,14 @@
 interaction player bluewall
 	any
+	any
+	none
 		breakwall bluewall
+	any
+	any
+		breakwall bluewall
+
+interaction player greenwall
+	any
+	any
+	any
+		breakwall greenwall

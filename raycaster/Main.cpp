@@ -144,8 +144,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			game.raycaster.player.dir -= game.raycaster.rotation_speed;
 		else if (wParam == VK_RIGHT)
 			game.raycaster.player.dir += game.raycaster.rotation_speed;
-		game.check_events();
-		game.clear_statuses();
+		game.validate_branches();
+		game.reset_branches();
 	}
 	break;
 	case WM_COMMAND:

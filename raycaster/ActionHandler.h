@@ -2,20 +2,7 @@
 
 #include <memory>
 #include "Action.h"
-
-#define RegisterBreakwallActionType(gamePtr, type, func, arg)			\
-	ActionHandler::GetInstance()->actions.register_action(				\
-		type,															\
-		[gamePtr, arg]() {												\
-			return func(*gamePtr, arg);									\
-		}																\
-	)	
-#define RemoveActionDispatcher(type)									\
-	ActionHandler::GetInstance()->actions.delete_action(type)
-
-#define ExecuteAction(type)												\
-	ActionHandler::GetInstance()->actions.execute(type)
-
+	
 class ActionHandler
 {
 private:
@@ -26,3 +13,21 @@ public:
 	static ActionHandler* GetInstance();
 	ActionRegistry<Action_Type> actions;
 };
+
+template<typename Game, typename Type, typename Func>
+inline int RegisterAction(Game* game, Type type, Func func, std::string arg) {
+	return (ActionHandler::GetInstance()->actions.register_action(
+		type,
+		[game, func, arg]() {
+			return func(game, arg);
+		}
+	));
+}
+
+inline void DeleteAction(int id) {
+	ActionHandler::GetInstance()->actions.delete_action(id);
+}
+
+inline void ExecuteAction(int id) {
+	ActionHandler::GetInstance()->actions.execute_action(id);
+}

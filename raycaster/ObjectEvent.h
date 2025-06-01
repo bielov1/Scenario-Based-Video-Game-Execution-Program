@@ -6,7 +6,7 @@ private:
 public:
 	ObjectEvent() 
 		: Event<Event_Type>("object", Event_Type::OBJECT) {}
-	static void check(Game& game, std::string arg)
+	static void check(Game* game, Node* node, std::string arg)
 	{
 		std::cout << "checking ObjectEvent::check with argument: "
 			<< arg

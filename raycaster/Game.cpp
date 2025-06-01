@@ -4,6 +4,7 @@
 #include "ObjectEvent.h"
 #include "BreakwallAction.h"
 #include "AnyCondition.h"
+#include "NoneCondition.h"
 
 
 
@@ -72,36 +73,6 @@ int Game::on_timer()
 	return 0;
 }
 
-std::string token_kind_name(Token_Kind kind)
-{
-	switch(kind) {
-	case Token_Kind::END:
-		return "end of content";
-	case Token_Kind::UNKNOWN:
-		return "unknown";
-	case Token_Kind::EVENT_INTERACTION:
-		return "interaction event";
-	case Token_Kind::EVENT_OBJECT:
-		return "object event";
-	case Token_Kind::EVENT_KEYBOARD:
-		return "keyboard event";
-	case Token_Kind::COND_ANY:
-		return "any condition";
-	case Token_Kind::ACTION_SUB:
-		return "sub action";
-	case Token_Kind::ACTION_BREAKWALL:
-		return "breakwall action";
-	case Token_Kind::ARGUMENT:
-		return "argument";
-	case Token_Kind::ACCESS_PROP:
-		return "access property";
-	default:
-		fprintf(stderr, "Error: token_kind_name()\n");
-		exit(1);
-	}
-	return nullptr;
-}
-
 void Game::get_content()
 {
 	std::ifstream scen(scenario_path);
@@ -113,52 +84,68 @@ void Game::get_content()
 	}
 }
 
-bool Game::verify_all_conditions_in_map(Event_Type e)
+void Game::execute_actions(Node* action_branch)
 {
-	auto it = conditions_status_for_event_type.find(e);
-	if (it != conditions_status_for_event_type.end()) {
-		for (const auto& valid : it->second) {
-			if (!valid) {
-				return false;
-			}
+	Node* act_node = action_branch;
+	while (act_node != nullptr) {
+		ExecuteAction(act_node->id);
+		act_node = act_node->lact_node;
+	}
+}
+
+void Game::reset_branches()
+{
+	for (const Scenario_Branch branch : scenario) {
+		Node* node = branch;
+		while (node != nullptr) {
+			node->active = false;
+			node = node->rcond_node;
 		}
 	}
-
-	return true;
 }
 
-void Game::clear_statuses()
+void Game::validate_branches()
 {
-	for (auto& pair : conditions_status_for_event_type) {
-		pair.second.clear();
-	}
-
-
-}
-
-void Game::check_events()
-{
-	for (const auto& e_type : event_container)
-	{
-		DispatchEvent(e_type);
-		bool event_type_is_active = events_status[e_type];
-		if (event_type_is_active) {
-			auto it = event_condition_map.find(e_type);
-			if (it != event_condition_map.end()) {
-				for (const auto& x : it->second) {
-					ValidateCondition(x);
-				} 
-
-				if (verify_all_conditions_in_map(e_type)) {
-					auto it = event_action_map.find(e_type);
-					if (it != event_action_map.end()) {
-						for (auto& a_type : it->second) {
-							ExecuteAction(a_type);
+	std::stack<Node*> stack;
+	for (const Scenario_Branch event : scenario) {
+		ValidateEvent(event->id);
+		if (event->active) {
+			Node* condition = event->rcond_node;
+			while (condition != nullptr) {
+				ValidateCondition(condition->id);
+				stack.push(condition);
+				if (condition->lact_node) {
+					bool all_conds_active = true;
+					while (!stack.empty()) {
+						if (!stack.top()->active) {
+							all_conds_active = false;
 						}
+						stack.pop();
+					}
+
+					if (condition->active && all_conds_active) {
+						execute_actions(condition->lact_node);
 					}
 				}
+				condition = condition->rcond_node;
 			}
 		}
+	}
+}
+
+void Game::add_node_to_branch(Scenario_Branch branch, Branch_Node node)
+{
+	if (branch == nullptr || node == nullptr)
+		return;
+
+	Node* next = branch;
+	if (node->level == Scenario_Level::CONDITION) {
+		for (;next->rcond_node != nullptr; next = next->rcond_node);
+		next->rcond_node = node;
+	} else if (node->level == Scenario_Level::ACTION) {
+		for (;next->rcond_node != nullptr; next = next->rcond_node);
+		for (;next->lact_node != nullptr; next = next->lact_node);
+		next->lact_node = node;
 	}
 }
 
@@ -168,56 +155,66 @@ void Game::parse()
 	while (i < tokens.size())
 	{
 		if (tokens[i].kind == Token_Kind::EVENT_INTERACTION) {
-			Event_Type type = Event_Type::INTERACTION;
 			std::string arg1 = tokens[i+1].text;
 			std::string arg2 = tokens[i+2].text;
 			i += 3;
-			events_status.insert(std::make_pair(type, false));
-			event_container.push_back(type);
-			AddInteractionEventListener(this, type, InteractionEvent::check, arg1, arg2);
+			Scenario_Branch interaction_branch = new Node();
+			int interaction_listener_id = RegisterEvent(this, interaction_branch, Event_Type::INTERACTION, InteractionEvent::check, arg1, arg2);
+			interaction_branch->id = interaction_listener_id;
+			interaction_branch->active = false;
+			interaction_branch->level = Scenario_Level::EVENT;
+			scenario.push_back(interaction_branch);
 		} else if (tokens[i].kind == Token_Kind::EVENT_OBJECT) {
-			Event_Type type = Event_Type::OBJECT;
 			std::string arg = tokens[i+1].text;
 			i += 2;
-			events_status.insert(std::make_pair(type, false));
-			event_container.push_back(type);
-			AddObjectEventListener(this, type, ObjectEvent::check, arg);
+			//Scenario_Branch object_branch;
+			//AddEventListener(Event_Type::OBJECT, ObjectEvent::check, this, &object_branch.node, arg);
 		} else if (tokens[i].kind == Token_Kind::EVENT_KEYBOARD) {
-			Event_Type type;
+			//Event_Type type;
 			const char* arg = tokens[i+1].text.c_str();
 
-			if (std::strcmp(arg, "UP") == 0) {
+			/*if (std::strcmp(arg, "UP") == 0) {
 				type = Event_Type::KEYBOARD_UP;
-				AddKeyboardEventListener(this, type, KeyboardUPEvent::check, arg);
+				AddEventListener(this, type, KeyboardUPEvent::check, arg);
 			} else if (std::strcmp(arg, "DOWN") == 0) {
 				type = Event_Type::KEYBOARD_DOWN;
-				AddKeyboardEventListener(this, type, KeyboardDOWNEvent::check, arg);
+				AddEventListener(this, type, KeyboardDOWNEvent::check, arg);
 			} else if (std::strcmp(arg, "LEFT") == 0) {
 				type = Event_Type::KEYBOARD_LEFT;
-				AddKeyboardEventListener(this, type, KeyboardLEFTEvent::check, arg);
+				AddEventListener(this, type, KeyboardLEFTEvent::check, arg);
 			} else if (std::strcmp(arg, "RIGHT") == 0) {
 				type = Event_Type::KEYBOARD_RIGHT;
-				AddKeyboardEventListener(this, type, KeyboardRIGHTEvent::check, arg);
+				AddEventListener(this, type, KeyboardRIGHTEvent::check, arg);
 			} else {
 				std::cerr << "ERROR: UNKNOWN EVENT_KEYBOARD: " << arg;
 				exit(1);
-			}
+			}*/
 
 			i += 2;
-			events_status.insert(std::make_pair(type, false));
-			event_container.push_back(type);
 		} else if (tokens[i].kind == Token_Kind::COND_ANY) {
-			Event_Type last_parsed_event = event_container.back();
-			condition_container.push_back(Cond_Type::ANY);
-			event_condition_map[last_parsed_event].push_back(Cond_Type::ANY);
-			RegisterAnyConditionType(this, Cond_Type::ANY, AnyCondition::validate, last_parsed_event);
+			Scenario_Branch last_parsed_branch = scenario.back();
+			Branch_Node any_node = new Node();
+			int id = RegisterCondition(this, any_node, Cond_Type::ANY, AnyCondition::validate);
+			any_node->id = id;
+			any_node->active = false;
+			any_node->level = Scenario_Level::CONDITION;
+			add_node_to_branch(last_parsed_branch, any_node);
+			++i;
+		} else if (tokens[i].kind == Token_Kind::COND_NONE) {
+			Scenario_Branch last_parsed_branch = scenario.back();
+			Branch_Node none_node = new Node();
+			int id = RegisterCondition(this, none_node, Cond_Type::NONE, NoneCondition::validate);
+			none_node->id = id;
+			none_node->active = false;
+			none_node->level = Scenario_Level::CONDITION;
+			add_node_to_branch(last_parsed_branch, none_node);
 			++i;
 		} else if (tokens[i].kind == Token_Kind::ACTION_BREAKWALL) {
-			Event_Type last_parsed_event = event_container.back();
+			Scenario_Branch last_parsed_branch = scenario.back();
 			std::string arg = tokens[i+1].text;
-			action_container.push_back(Action_Type::BREAKWALL);
-			event_action_map[last_parsed_event].push_back(Action_Type::BREAKWALL);
-			RegisterBreakwallActionType(this, Action_Type::BREAKWALL, BreakwallAction::act, arg);
+			int id = RegisterAction(this, Action_Type::BREAKWALL, BreakwallAction::act, arg);
+			Branch_Node breakwall_node = new Node(id, true, Scenario_Level::ACTION);
+			add_node_to_branch(last_parsed_branch, breakwall_node);
 			i += 2;
 
 		} else {

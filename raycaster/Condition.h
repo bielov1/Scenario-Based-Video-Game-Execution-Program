@@ -9,6 +9,7 @@
 enum class Cond_Type
 {
 	ANY,
+	NONE,
 	STRUCTURED
 };
 
@@ -32,16 +33,19 @@ class ConditionRegistry
 {
 private:
 	using func = std::function<void()>;
-	std::map<T, func> registry;
+	std::map<int, std::pair<T, func>> registry;
+	int register_id = 0;
 public:
-	void register_condition(T type, const func& f)
+	int register_condition(T type, const func& f)
 	{
-		registry.insert(std::make_pair(type, f));
+		int id = register_id++;
+		registry[id] = {type, f};
+		return id;
 	}
 
-	void delete_condition(T type)
+	void delete_condition(int id)
 	{
-		auto it = registry.find(type);
+		auto it = registry.find(id);
 		if (it != registry.end())
 		{
 			registry.erase(it);
@@ -50,12 +54,12 @@ public:
 		}
 	}
 
-	void validate(T type)
+	void validate_condition(int id)
 	{
-		auto it = registry.find(type);
+		auto it = registry.find(id);
 		if (it != registry.end())
 		{
-			it->second();
+			it->second.second();
 		} else {
 			std::cerr << " validate didn't work.\n";
 		}
