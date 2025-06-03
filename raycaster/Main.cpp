@@ -105,6 +105,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	game.init_game(hWnd, "game.txt");
+	game.validate_branches();
+	game.reset_branches();
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -144,8 +146,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			game.raycaster.player.dir -= game.raycaster.rotation_speed;
 		else if (wParam == VK_RIGHT)
 			game.raycaster.player.dir += game.raycaster.rotation_speed;
-		game.validate_branches();
-		game.reset_branches();
 	}
 	break;
 	case WM_COMMAND:
@@ -170,28 +170,52 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code that uses hdc here...
+		RECT text_rect;
 		RECT ClientRect;
 		GetClientRect(hWnd, &ClientRect);
 		int screen_width = ClientRect.right - ClientRect.left;
 		int screen_height = ClientRect.bottom - ClientRect.top;
-		if (screen_width <= 0 || screen_height <= 0) {
-			EndPaint(hWnd, &ps);
-			break;
-		}
+
+		if (game.state == Game_State::PLAYING) {
+			if (screen_width <= 0 || screen_height <= 0) {
+				EndPaint(hWnd, &ps);
+				break;
+			}
 		
-		void* render_result = game.raycaster.render_frame(screen_width, screen_height);
-		if (render_result)
-		{
-			memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
-			delete[] static_cast<Pixel*>(render_result);
+			void* render_result = game.raycaster.render_frame(screen_width, screen_height);
+			if (render_result)
+			{
+				memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
+				delete[] static_cast<Pixel*>(render_result);
+			}
+			game.DisplayBufferToWindow(hdc, ClientRect);
+			std::string timer_count_str = std::to_string(game.quest_timer.get_timer_count());
+			text_rect.left = 10;
+			text_rect.top = 10;
+			text_rect.bottom = 50;
+			text_rect.right = 100;
+			game.draw_text_on_screen(hdc, timer_count_str, text_rect, RGB(255, 255, 255), DT_LEFT | DT_TOP | DT_SINGLELINE);
+		} else if (game.state == Game_State::FAILED) {
+			game.Render_Failed_Screen(hdc, screen_width, screen_height);
+			int text_size = 100;
+			text_rect.left   = screen_width  / 2 - text_size / 2;
+			text_rect.top    = screen_height / 2 - text_size / 2;
+			text_rect.right  = screen_width  / 2 + text_size / 2;
+			text_rect.bottom = screen_height / 2 + text_size / 2;
+			game.draw_text_on_screen(hdc, "FAILED", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 		}
-		game.DisplayBufferToWindow(hdc, ClientRect);
 		EndPaint(hWnd, &ps);
+
+		
 	}
 	break;
 	case WM_TIMER:
-		if (wParam == WM_USER + 1)
+		if (wParam == WM_USER + 1) {
+			InvalidateRect(hWnd, NULL, FALSE);
 			return game.on_timer();
+		} else if (wParam == WM_USER + 2) {
+			game.uptime_in_secs++;
+		}
 		break;
 	case WM_DESTROY:
 		KillTimer(hWnd, WM_USER + 1);

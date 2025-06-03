@@ -1,14 +1,19 @@
+once
+	any
+		set timer.time 20
+
 interaction player bluewall
 	any
-	any
-	none
 		breakwall bluewall
-	any
-	any
-		breakwall bluewall
+
 
 interaction player greenwall
 	any
 	any
-	any
 		breakwall greenwall
+
+timer 1
+	any
+		sub here.time 1
+	eq here.time 0
+		failed

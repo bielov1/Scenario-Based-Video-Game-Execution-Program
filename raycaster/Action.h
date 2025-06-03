@@ -8,7 +8,10 @@
 
 enum class Action_Type
 {
-	BREAKWALL
+	BREAKWALL,
+	SUB,
+	FAILED,
+	SET
 };
 
 template <typename T>

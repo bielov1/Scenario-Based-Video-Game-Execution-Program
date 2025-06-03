@@ -12,14 +12,20 @@ enum class Token_Kind
 
 	EVENT_INTERACTION,
 	EVENT_OBJECT,
+	EVENT_ONCE,
+	EVENT_TIMER,
 	EVENT_KEYBOARD,
+
 	COND_ANY,
 	COND_NONE,
+	COND_EQ,
+
 	ACTION_SUB,
 	ACTION_BREAKWALL,
+	ACTION_SET,
+	ACTION_FAILED,
 
-	ARGUMENT,
-	ACCESS_PROP
+	ARGUMENT
 };
 
 struct Token
@@ -46,18 +52,22 @@ private:
 	const std::map<std::string, Token_Kind> token_kinds = {
 		{"interaction", Token_Kind::EVENT_INTERACTION},
 		{"object", Token_Kind::EVENT_OBJECT},
+		{"once", Token_Kind::EVENT_ONCE},
+		{"timer", Token_Kind::EVENT_TIMER},
 		{"keyboard", Token_Kind::EVENT_KEYBOARD},
 		{"any", Token_Kind::COND_ANY},
 		{"none", Token_Kind::COND_NONE},
+		{"eq", Token_Kind::COND_EQ},
 		{"sub", Token_Kind::ACTION_SUB},
-		{"breakwall", Token_Kind::ACTION_BREAKWALL}
+		{"breakwall", Token_Kind::ACTION_BREAKWALL},
+		{"set", Token_Kind::ACTION_SET},
+		{"failed", Token_Kind::ACTION_FAILED}
 	};
 public:
 	Lexer();
 	void init(std::string c, std::size_t len);
 	char eat_char();
 	void trim_left();
-	bool is_symbol_start(char x);
 	bool is_symbol(char x);
 
 	Token next_token();

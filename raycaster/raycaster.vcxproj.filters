@@ -75,12 +75,6 @@
     <ClInclude Include="InteractionEvent.h">
       <Filter>Events</Filter>
     </ClInclude>
-    <ClInclude Include="KeyboardEvent.h">
-      <Filter>Events</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectEvent.h">
-      <Filter>Events</Filter>
-    </ClInclude>
     <ClInclude Include="Vector2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -92,6 +86,27 @@
     </ClInclude>
     <ClInclude Include="NoneCondition.h">
       <Filter>Conditions</Filter>
+    </ClInclude>
+    <ClInclude Include="OnceEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="EqCondition.h">
+      <Filter>Conditions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="FailedAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="SetAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestTimer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

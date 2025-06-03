@@ -5,4 +5,12 @@ C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(31,50): 
 C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(32,44): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
   (compiling source file 'Game.cpp')
   
+  Main.cpp
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(31,50): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'Main.cpp')
+  
+C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(32,44): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  (compiling source file 'Main.cpp')
+  
+  Generating Code...
   raycaster.vcxproj -> C:\Users\olaph\Programming\oda\vs-projects\raycaster\x64\Debug\raycaster.exe

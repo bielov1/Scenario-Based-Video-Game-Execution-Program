@@ -9,11 +9,8 @@
 enum class Event_Type
 {
 	INTERACTION,
-	OBJECT,
-	KEYBOARD_UP,
-	KEYBOARD_DOWN,
-	KEYBOARD_LEFT,
-	KEYBOARD_RIGHT
+	ONCE,
+	TIMER
 };
 
 template <typename T>

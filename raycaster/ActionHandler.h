@@ -14,14 +14,14 @@ public:
 	ActionRegistry<Action_Type> actions;
 };
 
-template<typename Game, typename Type, typename Func>
-inline int RegisterAction(Game* game, Type type, Func func, std::string arg) {
-	return (ActionHandler::GetInstance()->actions.register_action(
+template<typename Game, typename Type, typename Func, typename... Args>
+inline int RegisterAction(Game* game, Type type, Func func, Args... args) {
+	return ActionHandler::GetInstance()->actions.register_action(
 		type,
-		[game, func, arg]() {
-			return func(game, arg);
+		[game, func, args...]() {
+			return func(game, args...);
 		}
-	));
+	);
 }
 
 inline void DeleteAction(int id) {

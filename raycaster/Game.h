@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "Raycaster.h"
 #include "Lexer.h"
+#include "QuestTimer.h"
 #include "Event.h"
 #include "Condition.h"
 #include "Action.h"
@@ -31,6 +32,14 @@ enum class Scenario_Level
 	ACTION
 };
 
+enum class Game_State
+{
+	START,
+	PLAYING,
+	FAILED,
+	VICTORY
+};
+
 struct Back_Buffer
 {
 	BITMAPINFO info;
@@ -45,13 +54,14 @@ struct Node
 {
 	int id;
 	bool active;
+	bool blocked;
 	Scenario_Level level;
 	Node* lact_node;
 	Node* rcond_node;
 	Node()
-		: id(-1), active(false), level(Scenario_Level::ZERO), lact_node(nullptr), rcond_node(nullptr) {}
+		: id(-1), active(false), blocked(false), level(Scenario_Level::ZERO), lact_node(nullptr), rcond_node(nullptr) {}
 	Node(int id, bool active, Scenario_Level l)
-		: id(id), active(active), level(l), lact_node(nullptr), rcond_node(nullptr) {}
+		: id(id), active(active), blocked(false), level(l), lact_node(nullptr), rcond_node(nullptr) {}
 };
 
 typedef Node* Scenario_Branch;
@@ -72,14 +82,26 @@ public:
 
 	void ResizeDIBSection();
 	void DisplayBufferToWindow(HDC hdc, RECT window_rect);
+	void Render_Failed_Screen(HDC hdc, int width, int height);
 
 	void init_game(HWND hwnd, std::string path);
 	int on_timer();
+	void draw_text_on_screen(HDC hdc, std::string text, RECT text_rect, COLORREF text_color, UINT format);
 	void get_content();
 	void execute_actions(Node* action_branch);
 	void reset_branches();
 	void validate_branches();
 	void add_node_to_branch(Scenario_Branch branch, Branch_Node node);
+
+	template<typename Func, typename... Args>
+	void register_event(Event_Type type, Func func, Args... args);
+
+	template<typename Func, typename... Args>
+	void register_condition(Cond_Type type, Func func, Args... args);
+
+	template<typename Func, typename... Args>
+	void register_action(Action_Type type, Func func, Args... args);
+
 	void parse();
 
 	std::vector<Scenario_Branch> scenario;
@@ -88,13 +110,14 @@ public:
 
 	int screen_width;
 	int screen_height;
+	int uptime_in_secs;
 
+	Game_State state;
 	Back_Buffer frame_buffer;
 
 	HWND Hwnd;
 	Lexer lexer;
 	Raycaster raycaster;
-
-
+	QuestTimer quest_timer;
 };
 

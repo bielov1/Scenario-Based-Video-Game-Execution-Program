@@ -31,15 +31,9 @@ void Lexer::trim_left()
 	}
 }
 
-
-bool Lexer::is_symbol_start(char x)
-{
-	return std::isalpha(static_cast<unsigned char>(x));
-}
-
 bool Lexer::is_symbol(char x)
 {
-	return std::isalnum(static_cast<unsigned char>(x));
+	return std::isalnum(static_cast<unsigned char>(x)) || x == '.';
 }
 
 Token Lexer::next_token()
@@ -50,14 +44,7 @@ Token Lexer::next_token()
 
 	if (cursor >= content_len) return token;
 
-	if (content[cursor] == '.') {
-		token.kind = Token_Kind::ACCESS_PROP;
-		token.text += eat_char();
-		token.text_len += 1;
-		return token;
-	}
-
-	if (is_symbol_start(content[cursor])) {
+	if (is_symbol(content[cursor])) {
 		while (cursor < content_len && is_symbol(content[cursor])) {
 			token.text += eat_char();
 			token.text_len += 1;

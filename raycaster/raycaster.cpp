@@ -97,7 +97,7 @@ void Raycaster::draw_frame(Pixel* pixels, Player& player, int screen_width, int 
 	Vector2 p2;
 	player.fov_range(p1, p2);
 
-	float render_width = screen_width * 0.5F;
+	float render_width = screen_width * 0.5;
 	float strip_width = screen_width / render_width;
 
 	for (int x = 0; x < render_width; x++) {

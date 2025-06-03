@@ -10,7 +10,7 @@ enum class Cond_Type
 {
 	ANY,
 	NONE,
-	STRUCTURED
+	EQ
 };
 
 template <typename T>

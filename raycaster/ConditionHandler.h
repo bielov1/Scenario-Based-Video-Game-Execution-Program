@@ -14,14 +14,14 @@ public:
 	ConditionRegistry<Cond_Type> conditions;
 };
 
-template<typename Game, typename Node, typename Type, typename Func>
-inline int RegisterCondition(Game* game, Node* node, Type type, Func func) {
-	return (ConditionHandler::GetInstance()->conditions.register_condition(
+template<typename Game, typename Node, typename Type, typename Func, typename... Args>
+inline int RegisterCondition(Game* game, Node* node, Type type, Func func, Args... args) {
+	return ConditionHandler::GetInstance()->conditions.register_condition(
 		type,
-		[game, node, func]() {
-			return func(game, node);
+		[game, node, func, args...]() {
+			return func(game, node, args...);
 		}
-	));
+	);
 }
 
 inline void DeleteCondition(int id) {
