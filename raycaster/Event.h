@@ -9,7 +9,7 @@
 enum class Event_Type
 {
 	INTERACTION,
-	ONCE,
+	MAP,
 	TIMER
 };
 
@@ -50,7 +50,7 @@ public:
 		{
 			registry.erase(it);
 		} else {
-			std::cerr << "remove_listener didn't work.";
+			throw std::out_of_range("delete_event: Invalid event ID");
 		}
 	}
 
@@ -61,8 +61,18 @@ public:
 		{
 			it->second.second();
 		} else {
-			std::cerr << " dispatch didn't work.\n";
+			throw std::out_of_range("validate_event: Invalid event ID");
 		}
+	}
+
+	T get_type_by_id(int id)
+	{
+		auto it = registry.find(id);
+		if (it != registry.end())
+		{
+			return it->second.first;
+		}
+		throw std::out_of_range("get_type_by_id: Invalid event ID");
 	}
 };
 

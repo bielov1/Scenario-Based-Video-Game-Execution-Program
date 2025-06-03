@@ -7,7 +7,6 @@
 #include <algorithm>
 #include "Raycaster.h"
 #include "Lexer.h"
-#include "QuestTimer.h"
 #include "Event.h"
 #include "Condition.h"
 #include "Action.h"
@@ -49,19 +48,17 @@ struct Back_Buffer
 	int bytes_per_pixel;
 };
 
-
 struct Node
 {
 	int id;
 	bool active;
 	bool blocked;
 	Scenario_Level level;
+	Node* prev_node;
 	Node* lact_node;
 	Node* rcond_node;
 	Node()
-		: id(-1), active(false), blocked(false), level(Scenario_Level::ZERO), lact_node(nullptr), rcond_node(nullptr) {}
-	Node(int id, bool active, Scenario_Level l)
-		: id(id), active(active), blocked(false), level(l), lact_node(nullptr), rcond_node(nullptr) {}
+		: id(-1), active(false), blocked(false), level(Scenario_Level::ZERO), prev_node(nullptr), lact_node(nullptr), rcond_node(nullptr) {}
 };
 
 typedef Node* Scenario_Branch;
@@ -103,6 +100,7 @@ public:
 	void register_action(Action_Type type, Func func, Args... args);
 
 	void parse();
+	WorldMap& worldmapInstance();
 
 	std::vector<Scenario_Branch> scenario;
 
@@ -118,6 +116,6 @@ public:
 	HWND Hwnd;
 	Lexer lexer;
 	Raycaster raycaster;
-	QuestTimer quest_timer;
+	WorldMap world_map;
 };
 

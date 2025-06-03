@@ -12,7 +12,7 @@ enum class Token_Kind
 
 	EVENT_INTERACTION,
 	EVENT_OBJECT,
-	EVENT_ONCE,
+	EVENT_MAP,
 	EVENT_TIMER,
 	EVENT_KEYBOARD,
 
@@ -24,7 +24,8 @@ enum class Token_Kind
 	ACTION_BREAKWALL,
 	ACTION_SET,
 	ACTION_FAILED,
-
+	ACTION_BUILD, 
+	
 	ARGUMENT
 };
 
@@ -47,12 +48,12 @@ private:
 	std::size_t cursor; // arbitrary point in file content
 	std::size_t line; 
 	std::size_t anchor;
-	std::size_t bol; // beginning of line to calculate indentaion level
+	std::size_t bol; // beginning of line to calculate indentation level
 
 	const std::map<std::string, Token_Kind> token_kinds = {
 		{"interaction", Token_Kind::EVENT_INTERACTION},
 		{"object", Token_Kind::EVENT_OBJECT},
-		{"once", Token_Kind::EVENT_ONCE},
+		{"map", Token_Kind::EVENT_MAP},
 		{"timer", Token_Kind::EVENT_TIMER},
 		{"keyboard", Token_Kind::EVENT_KEYBOARD},
 		{"any", Token_Kind::COND_ANY},
@@ -61,7 +62,8 @@ private:
 		{"sub", Token_Kind::ACTION_SUB},
 		{"breakwall", Token_Kind::ACTION_BREAKWALL},
 		{"set", Token_Kind::ACTION_SET},
-		{"failed", Token_Kind::ACTION_FAILED}
+		{"failed", Token_Kind::ACTION_FAILED},
+		{"build", Token_Kind::ACTION_BUILD}
 	};
 public:
 	Lexer();

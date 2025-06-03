@@ -1,6 +1,28 @@
-once
+map
 	any
-		set timer.time 20
+		set here.time   100
+		set here.width  20
+		set here.height 20
+		build wall blue  5   12
+		build wall green 3   17
+		build wall blue  14  4
+		build wall green 8   8
+		build wall blue  0   19
+		build wall red 13  1
+		build wall blue  10  15
+		build wall green 7   9
+		build wall blue  18  2
+		build wall green 1   11
+		build wall blue  6   6
+		build wall red 16  13
+		build wall blue  2   3
+		build wall green 17  10
+		build wall blue  11  0
+		build wall green 12  5
+		build wall blue  4   18
+		build wall red 9   14
+		build wall red  15  7
+		build wall green 19  16
 
 interaction player bluewall
 	any

@@ -105,8 +105,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	}
 
 	game.init_game(hWnd, "game.txt");
-	game.validate_branches();
-	game.reset_branches();
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -182,19 +180,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 		
-			void* render_result = game.raycaster.render_frame(screen_width, screen_height);
+			void* render_result = game.raycaster.render_frame(game.world_map, screen_width, screen_height);
 			if (render_result)
 			{
 				memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
 				delete[] static_cast<Pixel*>(render_result);
 			}
+
 			game.DisplayBufferToWindow(hdc, ClientRect);
-			std::string timer_count_str = std::to_string(game.quest_timer.get_timer_count());
-			text_rect.left = 10;
-			text_rect.top = 10;
-			text_rect.bottom = 50;
-			text_rect.right = 100;
-			game.draw_text_on_screen(hdc, timer_count_str, text_rect, RGB(255, 255, 255), DT_LEFT | DT_TOP | DT_SINGLELINE);
+
+			if (game.world_map.quest_timer.is_active()) {
+				std::string timer_count_str = std::to_string(game.world_map.quest_timer.get_timer_count());
+				text_rect.left = 10;
+				text_rect.top = 10;
+				text_rect.bottom = 50;
+				text_rect.right = 100;
+				game.draw_text_on_screen(hdc, timer_count_str, text_rect, RGB(255, 255, 255), DT_LEFT | DT_TOP | DT_SINGLELINE);
+			}
 		} else if (game.state == Game_State::FAILED) {
 			game.Render_Failed_Screen(hdc, screen_width, screen_height);
 			int text_size = 100;
@@ -214,7 +216,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			return game.on_timer();
 		} else if (wParam == WM_USER + 2) {
-			game.uptime_in_secs++;
+			if (game.world_map.quest_timer.is_active()) {
+				game.uptime_in_secs++;
+			}
 		}
 		break;
 	case WM_DESTROY:

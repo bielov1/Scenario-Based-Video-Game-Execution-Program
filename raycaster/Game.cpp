@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "InteractionEvent.h"
-#include "OnceEvent.h"
+#include "MapEvent.h"
 #include "TimerEvent.h"
 #include "AnyCondition.h"
 #include "NoneCondition.h"
@@ -8,6 +8,7 @@
 #include "BreakwallAction.h"
 #include "SubAction.h"
 #include "FailedAction.h"
+#include "BuildAction.h"
 #include "SetAction.h"
 
 
@@ -75,13 +76,7 @@ void Game::init_game(HWND hwnd, std::string path)
 	state = Game_State::PLAYING;
 	Hwnd = hwnd;
 	scenario_path = path;
-	RECT ClientRect;
-	GetClientRect(hwnd, &ClientRect);
-	screen_width = ClientRect.right - ClientRect.left;
-	screen_height = ClientRect.bottom - ClientRect.top;
-	raycaster.init();
 	get_content();
-
 	lexer.init(content, static_cast<std::size_t>(content.length()));
 	Token t;
 	for(;;) {
@@ -89,8 +84,17 @@ void Game::init_game(HWND hwnd, std::string path)
 		if (t.kind == Token_Kind::END) break;
 		tokens.push_back(t);
 	}
-
 	parse();
+	validate_branches();
+	reset_branches();
+
+	RECT ClientRect;
+	GetClientRect(hwnd, &ClientRect);
+	screen_width = ClientRect.right - ClientRect.left;
+	screen_height = ClientRect.bottom - ClientRect.top;
+
+	raycaster.init(world_map.map_width, world_map.map_width);
+
 }
 
 int Game::on_timer()
@@ -178,10 +182,12 @@ void Game::add_node_to_branch(Scenario_Branch branch, Branch_Node node)
 	if (node->level == Scenario_Level::CONDITION) {
 		for (;next->rcond_node != nullptr; next = next->rcond_node);
 		next->rcond_node = node;
+		next->rcond_node->prev_node = next;
 	} else if (node->level == Scenario_Level::ACTION) {
 		for (;next->rcond_node != nullptr; next = next->rcond_node);
 		for (;next->lact_node != nullptr; next = next->lact_node);
 		next->lact_node = node;
+		next->lact_node->prev_node = next;
 	}
 }
 
@@ -212,8 +218,11 @@ template<typename Func, typename... Args>
 void Game::register_action(Action_Type type, Func func, Args... args)
 {
 	Scenario_Branch last_parsed_branch = scenario.back();
-	int act_id = RegisterAction(this, type, func, args...);
-	Branch_Node act_node = new Node(act_id, true, Scenario_Level::ACTION);
+	Branch_Node act_node = new Node();
+	int act_id = RegisterAction(this, act_node, type, func, args...);
+	act_node->id = act_id;
+	act_node->active = true;
+	act_node->level = Scenario_Level::ACTION;
 	add_node_to_branch(last_parsed_branch, act_node);
 }
 
@@ -229,12 +238,13 @@ void Game::parse()
 			std::string arg2 = tokens[i+2].text;
 			i += 3;
 			register_event(Event_Type::INTERACTION, InteractionEvent::check, arg1, arg2);
-		} else if (t.kind == Token_Kind::EVENT_ONCE) {
+		} else if (t.kind == Token_Kind::EVENT_MAP) {
 			i += 1;
-			register_event(Event_Type::ONCE, OnceEvent::check);
+			register_event(Event_Type::MAP, MapEvent::check);
 		} else if (t.kind == Token_Kind::EVENT_TIMER) {
 			std::string arg = tokens[i+1].text;
 			i += 2;
+			world_map.quest_timer.activate();
 			register_event(Event_Type::TIMER, TimerEvent::check, arg);
 		} else if (t.kind == Token_Kind::COND_ANY) {
 			++i;
@@ -264,10 +274,19 @@ void Game::parse()
 			std::string arg2 = tokens[i+2].text;
 			i += 3;
 			register_action(Action_Type::SET, SetAction::act, arg1, arg2);
+		} else if (t.kind == Token_Kind::ACTION_BUILD) {
+			std::string arg1 = tokens[i+1].text;
+			std::string arg2 = tokens[i+2].text;
+			std::string arg3 = tokens[i+3].text;
+			std::string arg4 = tokens[i+4].text;
+			i += 5;
+			register_action(Action_Type::BUILD, BuildAction::act, arg1, arg2, arg3, arg4);
 		} else {
-			std::cerr << "uknown kind of token\n.";
-			exit(1);
+			throw std::out_of_range("parse: uknown kind of token");
 		}
 
 	}
 }
+
+WorldMap& Game::worldmapInstance()
+{ return world_map; }

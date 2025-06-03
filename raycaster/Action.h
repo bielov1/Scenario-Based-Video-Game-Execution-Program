@@ -11,6 +11,7 @@ enum class Action_Type
 	BREAKWALL,
 	SUB,
 	FAILED,
+	BUILD,
 	SET
 };
 
@@ -51,7 +52,7 @@ public:
 		{
 			registry.erase(it);
 		} else {
-			std::cerr << "remove_dispatcher didn't work.";
+			throw std::out_of_range("delete_action: Invalid action ID.");
 		}
 	}
 
@@ -62,7 +63,7 @@ public:
 		{
 			it->second.second();
 		} else {
-			std::cerr << " dispatch didn't work.\n";
+			throw std::out_of_range("execute_action: Invalid action ID");
 		}
 	}
 };

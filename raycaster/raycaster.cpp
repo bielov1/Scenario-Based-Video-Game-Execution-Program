@@ -4,10 +4,9 @@ Raycaster::Raycaster()
 	: grid_size()
 {}
 
-void Raycaster::init()
+void Raycaster::init(int map_width, int map_height)
 {
-	world_map.init(10, 10);
-	grid_size = Vector2(world_map.map_width, world_map.map_height);
+	grid_size = Vector2(map_width, map_height);
 	player.init(100, grid_size.mul(Vector2(0.55, 0.95)), M_PI * 1.25, "STAND");
 }
 
@@ -18,7 +17,7 @@ bool Raycaster::inside_map(int cell_x, int cell_y, int cols, int rows)
 	return cell_x >= 0 && cell_x <= cols && cell_y >= 0 && cell_y <= rows;
 }
 
-Ray_Hit Raycaster::cast_ray(Vector2& p1, Vector2& p2, int cols, int rows)
+Ray_Hit Raycaster::cast_ray(WorldMap& world_map, Vector2& p1, Vector2& p2, int cols, int rows)
 {
 	float dx = p2.x - p1.x; // ray dirx
 	float dy = p2.y - p1.y; // ray diry
@@ -87,7 +86,7 @@ void Raycaster::clear_frame(Pixel *pixels, int screen_width, int screen_height)
 	memset(pixels, 0, screen_width * screen_height * sizeof(Pixel));
 }
 
-void Raycaster::draw_frame(Pixel* pixels, Player& player, int screen_width, int screen_height)
+void Raycaster::draw_frame(WorldMap& world_map, Pixel* pixels, Player& player, int screen_width, int screen_height)
 {
 	if (!pixels || screen_width <= 0 || screen_height <= 0) {
 		fprintf(stderr, "draw_frame error!\n");
@@ -102,7 +101,7 @@ void Raycaster::draw_frame(Pixel* pixels, Player& player, int screen_width, int 
 
 	for (int x = 0; x < render_width; x++) {
 		Vector2 p = p1.lerp(p2, x / render_width);
-		Ray_Hit ray_hit = cast_ray(player.pos, p, grid_size.x, grid_size.y);
+		Ray_Hit ray_hit = cast_ray(world_map, player.pos, p, grid_size.x, grid_size.y);
 
 		if (ray_hit.hit) {
 			COLORREF rgb = world_map.map[ray_hit.hit_pos.y][ray_hit.hit_pos.x].get_rgb_color(); 
@@ -136,18 +135,13 @@ void Raycaster::draw_frame(Pixel* pixels, Player& player, int screen_width, int 
 }
 
 
-void* Raycaster::render_frame(int screen_width, int screen_height)
+void* Raycaster::render_frame(WorldMap& world_map, int screen_width, int screen_height)
 {
 	Pixel* pixels = new Pixel[screen_width * screen_height]{};
 	clear_frame(pixels, screen_width, screen_height);
-	float minimap_scale_factor = 0.3F;
-	float scale = minimap_scale_factor * min(screen_width / grid_size.x, screen_height / grid_size.y);
-	draw_frame(pixels, player, screen_width, screen_height);
+	draw_frame(world_map, pixels, player, screen_width, screen_height);
 	return (void *)pixels;
 }
 
 Player& Raycaster::playerInstance()
 { return player;}
-
-WorldMap& Raycaster::worldmapInstance()
-{ return world_map; }

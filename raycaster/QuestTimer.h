@@ -26,4 +26,13 @@ public:
 
 	int get_timer_count()
 	{ return timer; }
+
+	void activate()
+	{ active = true; }
+
+	bool is_active()
+	{ return active; }
+
+	void disable()
+	{ active = false; }
 };

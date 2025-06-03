@@ -14,12 +14,12 @@ public:
 	ActionRegistry<Action_Type> actions;
 };
 
-template<typename Game, typename Type, typename Func, typename... Args>
-inline int RegisterAction(Game* game, Type type, Func func, Args... args) {
+template<typename Game, typename Node, typename Type, typename Func, typename... Args>
+inline int RegisterAction(Game* game, Node* node, Type type, Func func, Args... args) {
 	return ActionHandler::GetInstance()->actions.register_action(
 		type,
-		[game, func, args...]() {
-			return func(game, args...);
+		[game, node, func, args...]() {
+			return func(game, node, args...);
 		}
 	);
 }

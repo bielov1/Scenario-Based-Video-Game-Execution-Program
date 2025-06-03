@@ -31,3 +31,7 @@ inline void DeleteEvent(int id) {
 inline void ValidateEvent(int id) {
 	EventHandler::GetInstance()->events.validate_event(id);
 }
+
+inline Event_Type GetEventTypeByID(int id) {
+	return EventHandler::GetInstance()->events.get_type_by_id(id);
+}

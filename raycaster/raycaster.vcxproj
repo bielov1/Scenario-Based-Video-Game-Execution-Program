@@ -131,6 +131,7 @@
     <ClInclude Include="ActionHandler.h" />
     <ClInclude Include="AnyCondition.h" />
     <ClInclude Include="BreakwallAction.h" />
+    <ClInclude Include="BuildAction.h" />
     <ClInclude Include="Condition.h" />
     <ClInclude Include="ConditionHandler.h" />
     <ClInclude Include="EqCondition.h" />
@@ -142,7 +143,7 @@
     <ClInclude Include="InteractionEvent.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="NoneCondition.h" />
-    <ClInclude Include="OnceEvent.h" />
+    <ClInclude Include="MapEvent.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Raycaster.h" />

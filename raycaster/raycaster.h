@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "WorldMap.h"
 
+
 struct Ray_Hit {
 	Vector2 hit_pos;
 	float ray_len;
@@ -32,19 +33,17 @@ class Raycaster
 {
 public:
 	Raycaster();
-	void init();
+	void init(int map_width, int map_height);
 	bool inside_map(int cell_x, int cell_y, int cols, int rows);
-	Ray_Hit cast_ray(Vector2& p1, Vector2& p2, int cols, int rows);
+	Ray_Hit cast_ray(WorldMap& world_map, Vector2& p1, Vector2& p2, int cols, int rows);
 	void clear_frame(Pixel *pixels, int screen_width, int screen_height);
-	void draw_frame(Pixel* pixels, Player& player, int screen_width, int screen_height);
-	void* render_frame(int screen_width, int screen_height);
+	void draw_frame(WorldMap& world_map, Pixel* pixels, Player& player, int screen_width, int screen_height);
+	void* render_frame(WorldMap& world_map, int screen_width, int screen_height);
 
 	Player& playerInstance();
-	WorldMap& worldmapInstance();
 
 	Vector2 grid_size;
 	Player player;
-	WorldMap world_map;
 
 	const float r = 5.0F;
 	const Vector2 move_speed{0.1F, 0.1F};

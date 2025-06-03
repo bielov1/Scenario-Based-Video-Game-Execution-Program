@@ -7,9 +7,31 @@ class SetAction : public Action<Action_Type>
 public:
 	SetAction() 
 		: Action<Action_Type>("set", Action_Type::SET) {}
-	static void act(Game* game, std::string arg1, std::string arg2)
+	static const Node* get_root(const Node* node)
 	{
+		while (node && node->prev_node) {
+			node = node->prev_node;
+		}
+		return node;
+	}
+
+	static void act(Game* game, Node* node, std::string arg1, std::string arg2)
+	{
+		const Node* root = get_root(node);
 		int num = std::stoi(arg2);
-		game->quest_timer.set_timer(num);
+		const std::string prefix = "here.";
+		if (arg1.rfind(prefix, 0) == 0) {
+			std::string after_dot = arg1.substr(prefix.length());
+			Event_Type t = GetEventTypeByID(root->id);
+			if (t == Event_Type::MAP) {
+				if (after_dot == "time") {
+					game->world_map.quest_timer.set_timer(num);
+				} else if (after_dot == "width") {
+					game->world_map.map_width = num;
+				} else if (after_dot == "height") {
+					game->world_map.map_height = num;
+				}
+			}
+		} 
 	}
 };

@@ -87,7 +87,7 @@
     <ClInclude Include="NoneCondition.h">
       <Filter>Conditions</Filter>
     </ClInclude>
-    <ClInclude Include="OnceEvent.h">
+    <ClInclude Include="MapEvent.h">
       <Filter>Events</Filter>
     </ClInclude>
     <ClInclude Include="TimerEvent.h">
@@ -107,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="QuestTimer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildAction.h">
+      <Filter>Actions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

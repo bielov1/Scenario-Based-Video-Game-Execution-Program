@@ -2,16 +2,11 @@
 #include "WorldMap.h"
 
 WorldMap::WorldMap()
-	: map_height(0), map_width(0) {}
+	: map_height(0), map_width(0), quest_timer() {}
 
-void WorldMap::init(std::size_t h, std::size_t w)
+void WorldMap::init()
 {
-	//h, std::vector<Wall>(w)
-	map_height = h;
-	map_width = w;
-
 	map.clear();
-
 	for (float i = 0; i < map_height; i++) {
 		std::vector<Wall> row;
 		for (float j = 0; j < map_width; j++) {
@@ -19,35 +14,47 @@ void WorldMap::init(std::size_t h, std::size_t w)
 		}
 		map.push_back(row);
 	}
+}
+void WorldMap::ensure_map_initialized()
+{
+	if (map.empty() && map_width > 0 && map_height > 0) {
+		init();
+	}
+}
 
-	for (int i = 0; i < map_height; i++) {
-		map[i][4].rgb_color = RGB(255, 0, 0);
-		map[i][4].render = true;
-		blue_walls.push_back(&map[i][4]);
+void WorldMap::build_wall(Wall_Color color, int x, int y)
+{
+	ensure_map_initialized();
+
+	if (x >= map_width || y >= map_height) {
+		std::cerr << "build_wall: out of bounds!\n";
+		return;
 	}
 
-	for (int i = 0; i < map_height; i++) {
-		map[i][6].rgb_color = RGB(255, 0, 0);
-		map[i][6].render = true;
-		blue_walls.push_back(&map[i][6]);
+	switch(color) {
+	case Wall_Color::RED:
+		map[x][y].rgb_color = RGB(0, 0, 255);
+		map[x][y].render = true;
+		red_walls.push_back(&map[x][y]);
+		break;
+	case Wall_Color::GREEN:
+		map[x][y].rgb_color = RGB(0, 255, 0);
+		map[x][y].render = true;
+		green_walls.push_back(&map[x][y]);
+		break;
+	case Wall_Color::BLUE:
+		map[x][y].rgb_color = RGB(255, 0, 0);
+		map[x][y].render = true;
+		blue_walls.push_back(&map[x][y]);
+		break;
+	default:
+		return;
 	}
+}
 
-	map[0][5].rgb_color = RGB(0, 255, 0);
-	map[0][5].render = true;
-	green_walls.push_back(&map[0][5]);
-	map[2][5].rgb_color = RGB(0, 255, 0);
-	map[2][5].render = true;
-	green_walls.push_back(&map[2][5]);
-	map[5][5].rgb_color = RGB(0, 255, 0);
-	map[5][5].render = true;
-	green_walls.push_back(&map[5][5]);
-	map[7][5].rgb_color = RGB(0, 255, 0);
-	map[7][5].render = true;
-	green_walls.push_back(&map[7][5]);
-	map[0][0].rgb_color = RGB(0, 255, 0);
-	map[0][0].render = true;
-	green_walls.push_back(&map[0][0]);
-	map[9][9].rgb_color = RGB(0, 255, 0);
-	map[9][9].render = true;
-	green_walls.push_back(&map[9][9]);
+void WorldMap::clear_walls()
+{
+	red_walls.clear();
+	green_walls.clear();
+	blue_walls.clear();
 }
