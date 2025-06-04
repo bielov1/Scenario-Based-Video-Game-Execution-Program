@@ -20,6 +20,7 @@ public:
 		const Node* root = get_root(node);
 		int num = std::stoi(arg2);
 		const std::string prefix = "here.";
+		const std::string timer_prefix = "timer.";
 		if (arg1.rfind(prefix, 0) == 0) {
 			std::string after_dot = arg1.substr(prefix.length());
 			Event_Type t = GetEventTypeByID(root->id);
@@ -30,8 +31,17 @@ public:
 					game->world_map.map_width = num;
 				} else if (after_dot == "height") {
 					game->world_map.map_height = num;
+				} else if (after_dot == "posx") {
+					game->world_map.player.set_posx(num);
+				} else if (after_dot == "posy") {
+					game->world_map.player.set_posy(num);
 				}
 			}
-		} 
+		} else if (arg1.rfind(timer_prefix, 0) == 0) {
+			std::string after_dot = arg1.substr(timer_prefix.length());
+			if (after_dot == "start") {
+				game->world_map.quest_timer.activate();
+			}
+		}
 	}
 };

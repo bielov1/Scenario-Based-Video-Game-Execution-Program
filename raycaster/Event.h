@@ -9,6 +9,7 @@
 enum class Event_Type
 {
 	INTERACTION,
+	OBJECT,
 	MAP,
 	TIMER
 };
@@ -33,13 +34,19 @@ class EventRegistry
 {
 private:
 	using func = std::function<void()>;
-	std::map<int, std::pair<T, func>> registry;
+
+	struct EventEntry {
+		T type;
+		func f;
+		std::vector<std::string> args;
+	};
+	std::map<int, EventEntry> registry;
 	int handle_id = 0;
 public:
-	int register_event(T type, const func& f)
+	int register_event(T type, const func& f, const std::vector<std::string>& args = {})
 	{
 		int id = handle_id++;
-		registry[id] = {type, f};
+		registry[id] = {type, f, args};
 		return id;
 	}
 
@@ -59,7 +66,7 @@ public:
 		auto it = registry.find(id);
 		if (it != registry.end())
 		{
-			it->second.second();
+			it->second.f();
 		} else {
 			throw std::out_of_range("validate_event: Invalid event ID");
 		}
@@ -70,9 +77,17 @@ public:
 		auto it = registry.find(id);
 		if (it != registry.end())
 		{
-			return it->second.first;
+			return it->second.type;
 		}
 		throw std::out_of_range("get_type_by_id: Invalid event ID");
+	}
+
+	std::string get_second_arg_by_id(int id) {
+		auto it = registry.find(id);
+		if (it != registry.end() && it->second.args.size() >= 2) {
+			return it->second.args[1];
+		}
+		throw std::out_of_range("Invalid ID or not enough arguments");
 	}
 };
 

@@ -33,7 +33,7 @@ void Lexer::trim_left()
 
 bool Lexer::is_symbol(char x)
 {
-	return std::isalnum(static_cast<unsigned char>(x)) || x == '.';
+	return std::isalnum(static_cast<unsigned char>(x)) || x == '.' || x == '_';
 }
 
 Token Lexer::next_token()

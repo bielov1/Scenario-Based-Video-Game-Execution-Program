@@ -111,6 +111,18 @@
     <ClInclude Include="BuildAction.h">
       <Filter>Actions</Filter>
     </ClInclude>
+    <ClInclude Include="ShowallAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoveAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectEvent.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="VictoryAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

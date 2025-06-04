@@ -4,10 +4,9 @@ Raycaster::Raycaster()
 	: grid_size()
 {}
 
-void Raycaster::init(int map_width, int map_height)
+void Raycaster::init(Player& player, int map_width, int map_height)
 {
 	grid_size = Vector2(map_width, map_height);
-	player.init(100, grid_size.mul(Vector2(0.55, 0.95)), M_PI * 1.25, "STAND");
 }
 
 
@@ -135,13 +134,10 @@ void Raycaster::draw_frame(WorldMap& world_map, Pixel* pixels, Player& player, i
 }
 
 
-void* Raycaster::render_frame(WorldMap& world_map, int screen_width, int screen_height)
+void* Raycaster::render_frame(WorldMap& world_map, Player& player, int screen_width, int screen_height)
 {
 	Pixel* pixels = new Pixel[screen_width * screen_height]{};
 	clear_frame(pixels, screen_width, screen_height);
 	draw_frame(world_map, pixels, player, screen_width, screen_height);
 	return (void *)pixels;
 }
-
-Player& Raycaster::playerInstance()
-{ return player;}

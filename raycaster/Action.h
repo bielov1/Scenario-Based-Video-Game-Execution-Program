@@ -11,7 +11,10 @@ enum class Action_Type
 	BREAKWALL,
 	SUB,
 	FAILED,
+	VICTORY,
 	BUILD,
+	SHOWALL,
+	REMOVE,
 	SET
 };
 

@@ -11,7 +11,6 @@ enum class Token_Kind
 	UNKNOWN,
 
 	EVENT_INTERACTION,
-	EVENT_OBJECT,
 	EVENT_MAP,
 	EVENT_TIMER,
 	EVENT_KEYBOARD,
@@ -24,7 +23,10 @@ enum class Token_Kind
 	ACTION_BREAKWALL,
 	ACTION_SET,
 	ACTION_FAILED,
-	ACTION_BUILD, 
+	ACTION_VICTORY,
+	ACTION_BUILD,
+	ACTION_SHOWALL,
+	ACTION_REMOVE,
 	
 	ARGUMENT
 };
@@ -52,10 +54,8 @@ private:
 
 	const std::map<std::string, Token_Kind> token_kinds = {
 		{"interaction", Token_Kind::EVENT_INTERACTION},
-		{"object", Token_Kind::EVENT_OBJECT},
 		{"map", Token_Kind::EVENT_MAP},
 		{"timer", Token_Kind::EVENT_TIMER},
-		{"keyboard", Token_Kind::EVENT_KEYBOARD},
 		{"any", Token_Kind::COND_ANY},
 		{"none", Token_Kind::COND_NONE},
 		{"eq", Token_Kind::COND_EQ},
@@ -63,7 +63,11 @@ private:
 		{"breakwall", Token_Kind::ACTION_BREAKWALL},
 		{"set", Token_Kind::ACTION_SET},
 		{"failed", Token_Kind::ACTION_FAILED},
-		{"build", Token_Kind::ACTION_BUILD}
+		{"build", Token_Kind::ACTION_BUILD},
+		{"showall", Token_Kind::ACTION_SHOWALL},
+		{"remove", Token_Kind::ACTION_REMOVE},
+		{"victory", Token_Kind::ACTION_VICTORY},
+
 	};
 public:
 	Lexer();

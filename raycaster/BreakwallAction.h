@@ -9,8 +9,8 @@ public:
 		: Action<Action_Type>("breakwall", Action_Type::BREAKWALL) {}
 	static void act(Game* game, Node* node, std::string arg)
 	{
-		int player_pos_x = static_cast<int>(floor(game->raycaster.player.pos.x));
-		int player_pos_y = static_cast<int>(floor(game->raycaster.player.pos.y));
+		int player_pos_x = static_cast<int>(floor(game->world_map.player.pos.x));
+		int player_pos_y = static_cast<int>(floor(game->world_map.player.pos.y));
 		if (arg == "greenwall") {
 			size_t green_walls_count = game->worldmapInstance().green_walls.size();
 			for (int i = 0; i < green_walls_count; i++) {
@@ -28,6 +28,16 @@ public:
 				int blue_wall_pos_y = static_cast<int>(game->worldmapInstance().blue_walls[i]->pos.y);
 				if (player_pos_x == blue_wall_pos_x && player_pos_y == blue_wall_pos_y) {
 					game->worldmapInstance().blue_walls[i]->render = false;
+					return;
+				}
+			}
+		} else if (arg == "redwall") {
+			size_t red_walls_count = game->worldmapInstance().red_walls.size();
+			for (int i = 0; i < red_walls_count; i++) {
+				int red_wall_pos_x = static_cast<int>(game->worldmapInstance().red_walls[i]->pos.x);
+				int red_wall_pos_y = static_cast<int>(game->worldmapInstance().red_walls[i]->pos.y);
+				if (player_pos_x == red_wall_pos_x && player_pos_y == red_wall_pos_y) {
+					game->worldmapInstance().red_walls[i]->render = false;
 					return;
 				}
 			}

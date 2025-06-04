@@ -137,13 +137,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
 		if (wParam == 'S')
-			game.raycaster.player.pos = game.raycaster.player.pos.sub(from_angle(game.raycaster.player.dir).mul(game.raycaster.move_speed));
+			game.world_map.player.pos = game.world_map.player.pos.sub(from_angle(game.world_map.player.dir).mul(game.world_map.player.move_speed));
 		else if (wParam == 'W')
-			game.raycaster.player.pos = game.raycaster.player.pos.add(from_angle(game.raycaster.player.dir).mul(game.raycaster.move_speed));
+			game.world_map.player.pos = game.world_map.player.pos.add(from_angle(game.world_map.player.dir).mul(game.world_map.player.move_speed));
 		else if (wParam == VK_LEFT)
-			game.raycaster.player.dir -= game.raycaster.rotation_speed;
+			game.world_map.player.dir -= game.world_map.player.rotation_speed;
 		else if (wParam == VK_RIGHT)
-			game.raycaster.player.dir += game.raycaster.rotation_speed;
+			game.world_map.player.dir += game.world_map.player.rotation_speed;
 	}
 	break;
 	case WM_COMMAND:
@@ -180,7 +180,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 		
-			void* render_result = game.raycaster.render_frame(game.world_map, screen_width, screen_height);
+			void* render_result = game.raycaster.render_frame(game.world_map, game.world_map.player, screen_width, screen_height);
 			if (render_result)
 			{
 				memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
@@ -205,6 +205,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			text_rect.right  = screen_width  / 2 + text_size / 2;
 			text_rect.bottom = screen_height / 2 + text_size / 2;
 			game.draw_text_on_screen(hdc, "FAILED", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+		} else if (game.state == Game_State::VICTORY) {
+			game.Render_Victory_Screen(hdc, screen_width, screen_height);
+			int text_size = 100;
+			text_rect.left   = screen_width  / 2 - text_size / 2;
+			text_rect.top    = screen_height / 2 - text_size / 2;
+			text_rect.right  = screen_width  / 2 + text_size / 2;
+			text_rect.bottom = screen_height / 2 + text_size / 2;
+			game.draw_text_on_screen(hdc, "VICTORY", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 		}
 		EndPaint(hWnd, &ps);
 

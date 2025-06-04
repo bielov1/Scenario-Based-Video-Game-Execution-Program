@@ -144,16 +144,20 @@
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="NoneCondition.h" />
     <ClInclude Include="MapEvent.h" />
+    <ClInclude Include="ObjectEvent.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Raycaster.h" />
+    <ClInclude Include="RemoveAction.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SetAction.h" />
+    <ClInclude Include="ShowallAction.h" />
     <ClInclude Include="SubAction.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="QuestTimer.h" />
     <ClInclude Include="TimerEvent.h" />
     <ClInclude Include="Vector2.h" />
+    <ClInclude Include="VictoryAction.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="WorldMap.h" />
   </ItemGroup>

@@ -8,7 +8,10 @@
 #include "BreakwallAction.h"
 #include "SubAction.h"
 #include "FailedAction.h"
+#include "VictoryAction.h"
 #include "BuildAction.h"
+#include "ShowallAction.h"
+#include "RemoveAction.h"
 #include "SetAction.h"
 
 
@@ -69,6 +72,23 @@ void Game::Render_Failed_Screen(HDC hdc, int width, int height)
 	DisplayBufferToWindow(hdc, window_rect);
 }
 
+void Game::Render_Victory_Screen(HDC hdc, int width, int height)
+{
+	if (!frame_buffer.memory) return;
+
+	uint32_t red_pixel = 0x0000FF00;
+
+	uint32_t* buffer = reinterpret_cast<uint32_t*>(frame_buffer.memory);
+	int total_pixels = frame_buffer.width * frame_buffer.height;
+
+	for (int i = 0; i < total_pixels; ++i) {
+		buffer[i] = red_pixel;
+	}
+
+	RECT window_rect = { 0, 0, width, height };
+	DisplayBufferToWindow(hdc, window_rect);
+}
+
 void Game::init_game(HWND hwnd, std::string path)
 {
 	SetTimer(hwnd, WM_USER + 1, 1000 / FPS, 0);
@@ -93,7 +113,7 @@ void Game::init_game(HWND hwnd, std::string path)
 	screen_width = ClientRect.right - ClientRect.left;
 	screen_height = ClientRect.bottom - ClientRect.top;
 
-	raycaster.init(world_map.map_width, world_map.map_width);
+	raycaster.init(world_map.player, world_map.map_width, world_map.map_width);
 
 }
 
@@ -194,8 +214,9 @@ void Game::add_node_to_branch(Scenario_Branch branch, Branch_Node node)
 template<typename Func, typename... Args>
 void Game::register_event(Event_Type type, Func func, Args... args)
 {
+	std::vector<std::string> raw_args = { args... };
 	Scenario_Branch event_branch = new Node();
-	int event_id = RegisterEvent(this, event_branch, type, func, args...);
+	int event_id = RegisterEvent(this, event_branch, type, func, raw_args, args...);
 	event_branch->id = event_id;
 	event_branch->active = false;
 	event_branch->level = Scenario_Level::EVENT;
@@ -244,7 +265,6 @@ void Game::parse()
 		} else if (t.kind == Token_Kind::EVENT_TIMER) {
 			std::string arg = tokens[i+1].text;
 			i += 2;
-			world_map.quest_timer.activate();
 			register_event(Event_Type::TIMER, TimerEvent::check, arg);
 		} else if (t.kind == Token_Kind::COND_ANY) {
 			++i;
@@ -269,6 +289,9 @@ void Game::parse()
 		} else if (t.kind == Token_Kind::ACTION_FAILED) {
 			i += 1;
 			register_action(Action_Type::FAILED, FailedAction::act);
+		} else if (t.kind == Token_Kind::ACTION_VICTORY) {
+			i += 1;
+			register_action(Action_Type::VICTORY, VictoryAction::act);
 		} else if (t.kind == Token_Kind::ACTION_SET) {
 			std::string arg1 = tokens[i+1].text;
 			std::string arg2 = tokens[i+2].text;
@@ -281,6 +304,15 @@ void Game::parse()
 			std::string arg4 = tokens[i+4].text;
 			i += 5;
 			register_action(Action_Type::BUILD, BuildAction::act, arg1, arg2, arg3, arg4);
+		} else if (t.kind == Token_Kind::ACTION_SHOWALL) {
+			std::string arg1 = tokens[i+1].text;
+			std::string arg2 = tokens[i+2].text;
+			i += 3;
+			register_action(Action_Type::SHOWALL, ShowallAction::act, arg1, arg2);
+		} else if (t.kind == Token_Kind::ACTION_REMOVE) {
+			std::string arg1 = tokens[i+1].text;
+			i += 2;
+			register_action(Action_Type::REMOVE, RemoveAction::act, arg1);
 		} else {
 			throw std::out_of_range("parse: uknown kind of token");
 		}

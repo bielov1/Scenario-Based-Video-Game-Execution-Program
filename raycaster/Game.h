@@ -80,6 +80,7 @@ public:
 	void ResizeDIBSection();
 	void DisplayBufferToWindow(HDC hdc, RECT window_rect);
 	void Render_Failed_Screen(HDC hdc, int width, int height);
+	void Render_Victory_Screen(HDC hdc, int width, int height);
 
 	void init_game(HWND hwnd, std::string path);
 	int on_timer();

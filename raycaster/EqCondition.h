@@ -18,9 +18,10 @@ public:
 	{
 		const Node* root = get_root(node);
 		int num = std::stoi(arg2);
-		const std::string prefix = "here.";
-		if (arg1.rfind(prefix, 0) == 0) {
-			std::string after_dot = arg1.substr(prefix.length());
+		const std::string prefix_here = "here.";
+		const std::string prefix_this = "this2.";
+		if (arg1.rfind(prefix_here, 0) == 0) {
+			std::string after_dot = arg1.substr(prefix_here.length());
 			Event_Type t = GetEventTypeByID(root->id);
 			if (t == Event_Type::TIMER) {
 				if (after_dot == "time") {
@@ -29,7 +30,22 @@ public:
 					}
 				} 
 			}
-		} 
+		} else if (arg1.rfind(prefix_this, 0) == 0) {
+			std::string root_arg2 = GetEventSecondArgById(root->id);
+			if (root_arg2.find("bluewall") == 0) {
+				if (game->worldmapInstance().all_blue_walls_are_destroyed()) {
+					node->active = true;
+				}
+			} else if (root_arg2.find("greenwall") == 0) {
+				if (game->worldmapInstance().all_green_walls_are_destroyed()) {
+					node->active = true;
+				}
+			} else if (root_arg2.find("redwall") == 0) {
+				if (game->worldmapInstance().all_red_walls_are_destroyed()) {
+					node->active = true;
+				}
+			}
+		}
 
 	}
 };
