@@ -9,6 +9,8 @@ public:
 		: Action<Action_Type>("failed", Action_Type::FAILED) {}
 	static void act(Game* game, Node* node)
 	{
-		game->state = Game_State::FAILED;
+		if (game->state != Game_State::VICTORY) {
+			game->state = Game_State::FAILED;
+		}
 	}
 };
