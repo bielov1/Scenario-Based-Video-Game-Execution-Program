@@ -137,13 +137,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	{
 		if (wParam == 'S')
-			game.world_map.player.pos = game.world_map.player.pos.sub(from_angle(game.world_map.player.dir).mul(game.world_map.player.move_speed));
+			game.scenario.world_map.player.pos = game.scenario.world_map.player.pos.sub(from_angle(game.scenario.world_map.player.dir).mul(game.scenario.world_map.player.move_speed));
 		else if (wParam == 'W')
-			game.world_map.player.pos = game.world_map.player.pos.add(from_angle(game.world_map.player.dir).mul(game.world_map.player.move_speed));
+			game.scenario.world_map.player.pos = game.scenario.world_map.player.pos.add(from_angle(game.scenario.world_map.player.dir).mul(game.scenario.world_map.player.move_speed));
 		else if (wParam == VK_LEFT)
-			game.world_map.player.dir -= game.world_map.player.rotation_speed;
+			game.scenario.world_map.player.dir -= game.scenario.world_map.player.rotation_speed;
 		else if (wParam == VK_RIGHT)
-			game.world_map.player.dir += game.world_map.player.rotation_speed;
+			game.scenario.world_map.player.dir += game.scenario.world_map.player.rotation_speed;
 	}
 	break;
 	case WM_COMMAND:
@@ -174,49 +174,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		int screen_width = ClientRect.right - ClientRect.left;
 		int screen_height = ClientRect.bottom - ClientRect.top;
 
-		if (game.state == Game_State::PLAYING) {
-			if (screen_width <= 0 || screen_height <= 0) {
-				EndPaint(hWnd, &ps);
-				break;
-			}
+		if (game.state == Game_State::RUN) {
+			if (game.scenario.world_map.map_state == Map_State::PLAYING) {
+				if (screen_width <= 0 || screen_height <= 0) {
+					EndPaint(hWnd, &ps);
+					break;
+				}
 		
-			void* render_result = game.raycaster.render_frame(game.world_map, game.world_map.player, screen_width, screen_height);
-			if (render_result)
-			{
-				memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
-				delete[] static_cast<Pixel*>(render_result);
-			}
+				void* render_result = game.raycaster.render_frame(game.scenario.world_map, game.scenario.world_map.player, screen_width, screen_height);
+				if (render_result)
+				{
+					memcpy(game.frame_buffer.memory, render_result, screen_width * screen_height * sizeof(Pixel));
+					delete[] static_cast<Pixel*>(render_result);
+				}
 
-			game.DisplayBufferToWindow(hdc, ClientRect);
+				game.DisplayBufferToWindow(hdc, ClientRect);
 
-			if (game.world_map.quest_timer.is_active()) {
-				std::string timer_count_str = std::to_string(game.world_map.quest_timer.get_timer_count());
-				text_rect.left = 10;
-				text_rect.top = 10;
-				text_rect.bottom = 50;
-				text_rect.right = 100;
-				game.draw_text_on_screen(hdc, timer_count_str, text_rect, RGB(255, 255, 255), DT_LEFT | DT_TOP | DT_SINGLELINE);
+				if (game.scenario.world_map.quest_timer.is_active()) {
+					std::string timer_count_str = std::to_string(game.scenario.world_map.quest_timer.get_timer_count());
+					text_rect.left = 10;
+					text_rect.top = 10;
+					text_rect.bottom = 50;
+					text_rect.right = 100;
+					game.draw_text_on_screen(hdc, timer_count_str, text_rect, RGB(255, 255, 255), DT_LEFT | DT_TOP | DT_SINGLELINE);
+				}
+			} else if (game.scenario.world_map.map_state == Map_State::VICTORY) {
+				game.Render_Victory_Screen(hdc, screen_width, screen_height);
+				int text_size = 100;
+				text_rect.left   = screen_width  / 2 - text_size / 2;
+				text_rect.top    = screen_height / 2 - text_size / 2;
+				text_rect.right  = screen_width  / 2 + text_size / 2;
+				text_rect.bottom = screen_height / 2 + text_size / 2;
+				game.draw_text_on_screen(hdc, "VICTORY", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+			} else if (game.scenario.world_map.map_state == Map_State::FAILED) {
+				game.Render_Failed_Screen(hdc, screen_width, screen_height);
+				int text_size = 100;
+				text_rect.left   = screen_width  / 2 - text_size / 2;
+				text_rect.top    = screen_height / 2 - text_size / 2;
+				text_rect.right  = screen_width  / 2 + text_size / 2;
+				text_rect.bottom = screen_height / 2 + text_size / 2;
+				game.draw_text_on_screen(hdc, "FAILED", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 			}
-		} else if (game.state == Game_State::FAILED) {
-			game.Render_Failed_Screen(hdc, screen_width, screen_height);
-			int text_size = 100;
-			text_rect.left   = screen_width  / 2 - text_size / 2;
-			text_rect.top    = screen_height / 2 - text_size / 2;
-			text_rect.right  = screen_width  / 2 + text_size / 2;
-			text_rect.bottom = screen_height / 2 + text_size / 2;
-			game.draw_text_on_screen(hdc, "FAILED", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-		} else if (game.state == Game_State::VICTORY) {
-			game.Render_Victory_Screen(hdc, screen_width, screen_height);
-			int text_size = 100;
-			text_rect.left   = screen_width  / 2 - text_size / 2;
-			text_rect.top    = screen_height / 2 - text_size / 2;
-			text_rect.right  = screen_width  / 2 + text_size / 2;
-			text_rect.bottom = screen_height / 2 + text_size / 2;
-			game.draw_text_on_screen(hdc, "VICTORY", text_rect, RGB(255, 255, 255), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-		}
+		} 
+
 		EndPaint(hWnd, &ps);
-
-		
 	}
 	break;
 	case WM_TIMER:
@@ -224,8 +225,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			return game.on_timer();
 		} else if (wParam == WM_USER + 2) {
-			if (game.world_map.quest_timer.is_active()) {
-				game.uptime_in_secs++;
+			if (game.scenario.world_map.quest_timer.is_active()) {
+				game.scenario.world_map.uptime_in_secs++;
 			}
 		}
 		break;

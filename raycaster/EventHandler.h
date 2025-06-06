@@ -14,12 +14,12 @@ public:
 };
 
 
-template<typename Game, typename Node, typename Type, typename Func, typename... Args>
-inline int RegisterEvent(Game* game, Node* node, Type type, Func func, const std::vector<std::string>& raw_args, Args... args) {
+template<typename WorldMap, typename Node, typename Type, typename Func, typename... Args>
+inline int RegisterEvent(WorldMap* map, Node* node, Type type, Func func, const std::vector<std::string>& raw_args, Args... args) {
 	return EventHandler::GetInstance()->events.register_event(
 		type,
-		[game, node, func, args...]() {
-			return func(game, node, args...);
+		[map, node, func, args...]() {
+			return func(map, node, args...);
 		},
 		raw_args
 	);

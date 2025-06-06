@@ -15,12 +15,12 @@ public:
 		return node;
 	}
 
-	static void act(Game* game, Node* node, std::string arg1)
+	static void act(WorldMap* map, Node* node, std::string arg1)
 	{
 		if (arg1.find("switcher_") == 0) {
 			std::string num_str = arg1.substr(9);
 			int switcher_id = std::stoi(num_str);
-			game->worldmapInstance().delete_switcher(switcher_id);
+			map->delete_switcher(switcher_id);
 		}
 	}
 };

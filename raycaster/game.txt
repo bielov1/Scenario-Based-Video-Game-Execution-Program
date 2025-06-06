@@ -1,6 +1,6 @@
 map
 	any
-		set here.time         50
+		set here.time         100
 		set here.width        20
 		set here.height       20
 		set here.posx         10

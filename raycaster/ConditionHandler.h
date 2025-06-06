@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 #include "Condition.h"
 
@@ -14,12 +13,12 @@ public:
 	ConditionRegistry<Cond_Type> conditions;
 };
 
-template<typename Game, typename Node, typename Type, typename Func, typename... Args>
-inline int RegisterCondition(Game* game, Node* node, Type type, Func func, Args... args) {
+template<typename WorldMap, typename Node, typename Type, typename Func, typename... Args>
+inline int RegisterCondition(WorldMap* map, Node* node, Type type, Func func, Args... args) {
 	return ConditionHandler::GetInstance()->conditions.register_condition(
 		type,
-		[game, node, func, args...]() {
-			return func(game, node, args...);
+		[map, node, func, args...]() {
+			return func(map, node, args...);
 		}
 	);
 }

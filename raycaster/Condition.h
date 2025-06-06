@@ -1,10 +1,12 @@
 #pragma once
-
 #include <iostream>
 #include <string>
 #include <map>
 #include <functional>
 #include <vector>
+#include "WorldMap.h"
+
+class Game;
 
 enum class Cond_Type
 {

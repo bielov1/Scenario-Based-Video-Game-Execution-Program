@@ -9,9 +9,9 @@ private:
 	const double FOV = M_PI/2;
 public:
 	Vector2 pos;
-	float dir = 3*M_PI/2;
+	double dir = 3*M_PI/2;
 	const Vector2 move_speed{0.1F, 0.1F};
-	const float rotation_speed = 0.05F;
+	const double rotation_speed = 0.05F;
 
 	Player()
 		: pos(zero()) {}
@@ -26,8 +26,8 @@ public:
 	}
 
 	void set_posx(int x)
-	{ pos.x = x; }
+	{ pos.x = static_cast<double>(x); }
 
 	void set_posy(int y)
-	{ pos.y = y; }
+	{ pos.y = static_cast<double>(y); }
 };

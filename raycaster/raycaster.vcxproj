@@ -144,12 +144,12 @@
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="NoneCondition.h" />
     <ClInclude Include="MapEvent.h" />
-    <ClInclude Include="ObjectEvent.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="RemoveAction.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Scenario.h" />
     <ClInclude Include="SetAction.h" />
     <ClInclude Include="ShowallAction.h" />
     <ClInclude Include="SubAction.h" />
@@ -169,6 +169,7 @@
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Raycaster.cpp" />
+    <ClCompile Include="Scenario.cpp" />
     <ClCompile Include="WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>

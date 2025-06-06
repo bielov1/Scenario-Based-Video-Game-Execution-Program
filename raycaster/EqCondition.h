@@ -14,7 +14,7 @@ public:
 		return node;
 	}
 	
-	static void validate(Game* game, Node* node, std::string arg1, std::string arg2)
+	static void validate(WorldMap* map, Node* node, std::string arg1, std::string arg2)
 	{
 		const Node* root = get_root(node);
 		int num = std::stoi(arg2);
@@ -25,7 +25,7 @@ public:
 			Event_Type t = GetEventTypeByID(root->id);
 			if (t == Event_Type::TIMER) {
 				if (after_dot == "time") {
-					if (game->world_map.quest_timer.get_timer_count() == num) {
+					if (map->quest_timer.get_timer_count() == num) {
 						node->active = true;
 					}
 				} 
@@ -33,15 +33,15 @@ public:
 		} else if (arg1.rfind(prefix_this, 0) == 0) {
 			std::string root_arg2 = GetEventSecondArgById(root->id);
 			if (root_arg2.find("bluewall") == 0) {
-				if (game->worldmapInstance().all_blue_walls_are_destroyed()) {
+				if (map->all_blue_walls_are_destroyed()) {
 					node->active = true;
 				}
 			} else if (root_arg2.find("greenwall") == 0) {
-				if (game->worldmapInstance().all_green_walls_are_destroyed()) {
+				if (map->all_green_walls_are_destroyed()) {
 					node->active = true;
 				}
 			} else if (root_arg2.find("redwall") == 0) {
-				if (game->worldmapInstance().all_red_walls_are_destroyed()) {
+				if (map->all_red_walls_are_destroyed()) {
 					node->active = true;
 				}
 			}

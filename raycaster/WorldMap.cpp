@@ -1,15 +1,18 @@
 #include <Windows.h>
 #include "WorldMap.h"
 
+
 WorldMap::WorldMap()
-	: map_height(0), map_width(0), quest_timer() {}
+	: map_height(0), map_width(0), uptime_in_secs(0), quest_timer(), player(), map_state(Map_State::START)
+{}
 
 void WorldMap::init()
 {
+	map_state = Map_State::PLAYING;
 	map.clear();
-	for (float i = 0; i < map_height; i++) {
+	for (double i = 0; i < map_height; i++) {
 		std::vector<Wall> row;
-		for (float j = 0; j < map_width; j++) {
+		for (double j = 0; j < map_width; j++) {
 			row.push_back(Wall(Vector2(j, i), RGB(0, 0, 0), false));
 		}
 		map.push_back(row);

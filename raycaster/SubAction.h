@@ -15,7 +15,7 @@ public:
 		return node;
 	}
 	
-	static void act(Game* game, Node* node, std::string arg1, std::string arg2)
+	static void act(WorldMap* map, Node* node, std::string arg1, std::string arg2)
 	{
 		const Node* root = get_root(node);
 		int num = std::stoi(arg2);
@@ -25,7 +25,7 @@ public:
 			Event_Type t = GetEventTypeByID(root->id);
 			if (t == Event_Type::TIMER) {
 				if (after_dot == "time") {
-					game->world_map.quest_timer.reduce_time(num);
+					map->quest_timer.reduce_time(num);
 				} 
 			}
 		} 

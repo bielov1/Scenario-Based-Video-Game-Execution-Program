@@ -48,12 +48,6 @@
     <ClInclude Include="ConditionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EventHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -79,9 +73,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Raycaster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NoneCondition.h">
@@ -111,17 +102,26 @@
     <ClInclude Include="BuildAction.h">
       <Filter>Actions</Filter>
     </ClInclude>
-    <ClInclude Include="ShowallAction.h">
-      <Filter>Actions</Filter>
-    </ClInclude>
     <ClInclude Include="RemoveAction.h">
       <Filter>Actions</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectEvent.h">
-      <Filter>Events</Filter>
-    </ClInclude>
     <ClInclude Include="VictoryAction.h">
       <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenario.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShowallAction.h">
+      <Filter>Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldMap.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +147,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WorldMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

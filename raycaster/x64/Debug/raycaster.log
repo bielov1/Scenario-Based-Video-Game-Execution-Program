@@ -1,19 +1,2 @@
-﻿  Game.cpp
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(12,20): warning C4305: 'initializing': truncation from 'double' to 'float'
-  (compiling source file 'Game.cpp')
-  
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(24,50): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  (compiling source file 'Game.cpp')
-  
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(25,44): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  (compiling source file 'Game.cpp')
-  
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(29,12): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  (compiling source file 'Game.cpp')
-  
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Player.h(32,12): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  (compiling source file 'Game.cpp')
-  
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Game.cpp(116,65): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\olaph\Programming\oda\vs-projects\raycaster\raycaster\Game.cpp(116,44): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+﻿  Raycaster.cpp
   raycaster.vcxproj -> C:\Users\olaph\Programming\oda\vs-projects\raycaster\x64\Debug\raycaster.exe

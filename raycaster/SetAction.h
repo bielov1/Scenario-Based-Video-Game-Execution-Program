@@ -15,7 +15,7 @@ public:
 		return node;
 	}
 
-	static void act(Game* game, Node* node, std::string arg1, std::string arg2)
+	static void act(WorldMap* map, Node* node, std::string arg1, std::string arg2)
 	{
 		const Node* root = get_root(node);
 		int num = std::stoi(arg2);
@@ -26,21 +26,21 @@ public:
 			Event_Type t = GetEventTypeByID(root->id);
 			if (t == Event_Type::MAP) {
 				if (after_dot == "time") {
-					game->world_map.quest_timer.set_timer(num);
+					map->quest_timer.set_timer(num);
 				} else if (after_dot == "width") {
-					game->world_map.map_width = num;
+					map->map_width = num;
 				} else if (after_dot == "height") {
-					game->world_map.map_height = num;
+					map->map_height = num;
 				} else if (after_dot == "posx") {
-					game->world_map.player.set_posx(num);
+					map->player.set_posx(num);
 				} else if (after_dot == "posy") {
-					game->world_map.player.set_posy(num);
+					map->player.set_posy(num);
 				}
 			}
 		} else if (arg1.rfind(timer_prefix, 0) == 0) {
 			std::string after_dot = arg1.substr(timer_prefix.length());
 			if (after_dot == "start") {
-				game->world_map.quest_timer.activate();
+				map->quest_timer.activate();
 			}
 		}
 	}

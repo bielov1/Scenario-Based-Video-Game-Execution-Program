@@ -8,7 +8,7 @@ public:
 	BuildAction() 
 		: Action<Action_Type>("build", Action_Type::BUILD) {}
 
-	static void act(Game* game, Node* node, 
+	static void act(WorldMap* map, Node* node, 
 					std::string arg1, std::string arg2, std::string arg3, std::string arg4)
 	{
 		int num1 = std::stoi(arg3);
@@ -16,21 +16,21 @@ public:
 		
 		if (arg1 == "wall") {
 			if (arg2 == "blue") {
-				game->world_map.build_wall(Wall_Color::BLUE, num1, num2);
+				map->build_wall(Wall_Color::BLUE, num1, num2);
 			} else if (arg2 == "green") {
-				game->world_map.build_wall(Wall_Color::GREEN, num1, num2);
+				map->build_wall(Wall_Color::GREEN, num1, num2);
 			} else if (arg2 == "red") {
-				game->world_map.build_wall(Wall_Color::RED, num1, num2);
+				map->build_wall(Wall_Color::RED, num1, num2);
 			}
 		} else if (arg1.find("switcher_") == 0) {
 			std::string num_str = arg1.substr(9);
 			int switcher_id = std::stoi(num_str);
 			if (arg2 == "blue") {
-				game->world_map.build_switcher(Wall_Color::BLUE, switcher_id, num1, num2);
+				map->build_switcher(Wall_Color::BLUE, switcher_id, num1, num2);
 			} else if (arg2 == "green"){
-				game->world_map.build_switcher(Wall_Color::GREEN, switcher_id, num1, num2);
+				map->build_switcher(Wall_Color::GREEN, switcher_id, num1, num2);
 			} else if (arg2 == "red") {
-				game->world_map.build_switcher(Wall_Color::RED, switcher_id, num1, num2);
+				map->build_switcher(Wall_Color::RED, switcher_id, num1, num2);
 			}
 		}
 		

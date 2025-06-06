@@ -5,6 +5,15 @@
 #include "QuestTimer.h"
 #include "Player.h"
 
+enum class Map_State
+{
+	START,
+	PLAYING,
+	VICTORY,
+	FAILED,
+	RESTART
+};
+
 enum class Wall_Color
 {
 	RED,
@@ -35,10 +44,11 @@ public:
 	bool all_green_walls_are_destroyed();
 	bool all_red_walls_are_destroyed();
 	void clear_walls();
-	
-	std::size_t map_height;
-	std::size_t map_width;
-	
+
+	int map_height;
+	int map_width;
+	int uptime_in_secs;
+
 	std::vector<std::vector<Wall>> map;
 
 	std::vector<Wall*> green_walls;
@@ -47,7 +57,7 @@ public:
 
 	std::vector<Switcher> switcher; 
 
+	Map_State map_state;
 	QuestTimer quest_timer;
 	Player player;
-
 };

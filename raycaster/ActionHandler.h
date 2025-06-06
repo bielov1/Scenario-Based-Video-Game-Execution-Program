@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 #include "Action.h"
 	
@@ -14,12 +13,12 @@ public:
 	ActionRegistry<Action_Type> actions;
 };
 
-template<typename Game, typename Node, typename Type, typename Func, typename... Args>
-inline int RegisterAction(Game* game, Node* node, Type type, Func func, Args... args) {
+template<typename WorldMap, typename Node, typename Type, typename Func, typename... Args>
+inline int RegisterAction(WorldMap* map, Node* node, Type type, Func func, Args... args) {
 	return ActionHandler::GetInstance()->actions.register_action(
 		type,
-		[game, node, func, args...]() {
-			return func(game, node, args...);
+		[map, node, func, args...]() {
+			return func(map, node, args...);
 		}
 	);
 }

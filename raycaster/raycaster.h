@@ -8,9 +8,9 @@
 
 struct Ray_Hit {
 	Vector2 hit_pos;
-	float ray_len;
+	double ray_len;
 	bool hit;
-	Ray_Hit(Vector2 v, float d, bool h) 
+	Ray_Hit(Vector2 v, double d, bool h) 
 		: hit_pos(v), ray_len(d), hit(h) {}
 
 	Ray_Hit()
@@ -40,8 +40,5 @@ public:
 	void draw_frame(WorldMap& world_map, Pixel* pixels, Player& player, int screen_width, int screen_height);
 	void* render_frame(WorldMap& world_map, Player& player, int screen_width, int screen_height);
 
-	//Player& playerInstance();
-
 	Vector2 grid_size;
-	//Player player;
 };
