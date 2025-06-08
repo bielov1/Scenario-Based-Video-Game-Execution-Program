@@ -13,8 +13,10 @@ public:
 	ActionRegistry<Action_Type> actions;
 };
 
-template<typename WorldMap, typename Node, typename Type, typename Func, typename... Args>
-inline int RegisterAction(WorldMap* map, Node* node, Type type, Func func, Args... args) {
+template<typename WorldMap, typename Node, typename Type, 
+		 typename Func, typename... Args>
+inline int RegisterAction(WorldMap* map, Node* node, Type type, 
+						  Func func, Args... args) {
 	return ActionHandler::GetInstance()->actions.register_action(
 		type,
 		[map, node, func, args...]() {

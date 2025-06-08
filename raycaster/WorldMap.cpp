@@ -38,14 +38,17 @@ void WorldMap::build_wall(Wall_Color color, int x, int y)
 	case Wall_Color::RED:
 		map[y][x].rgb_color = RGB(0, 0, 255);
 		red_walls.push_back(&map[y][x]);
+		built_walls.push_back(&map[y][x]);
 		break;
 	case Wall_Color::GREEN:
 		map[y][x].rgb_color = RGB(0, 255, 0);
 		green_walls.push_back(&map[y][x]);
+		built_walls.push_back(&map[y][x]);
 		break;
 	case Wall_Color::BLUE:
 		map[y][x].rgb_color = RGB(255, 0, 0);
 		blue_walls.push_back(&map[y][x]);
+		built_walls.push_back(&map[y][x]);
 		break;
 	default:
 		return;
@@ -117,46 +120,111 @@ void WorldMap::delete_switcher(int id)
 {
 	for (auto it = switcher.begin(); it != switcher.end(); ++it) {
 		if (it->id == id) {
-			//delete it->wall;
 			it->wall->render = false;
-			switcher.erase(it);
+			//switcher.erase(it);
 			break;
 		}
 	}
 }
 
-bool WorldMap::all_blue_walls_are_destroyed()
+bool WorldMap::greenwalls_count_equals(int num) 
 {
-	for (Wall* w : blue_walls) {
-		if (w->render) {
-			return false;
-		}
-	}
+	int green_walls_count = 0;
 
-	return true;
-}
-
-bool WorldMap::all_green_walls_are_destroyed()
-{
 	for (Wall* w : green_walls) {
 		if (w->render) {
-			return false;
+			green_walls_count++;
 		}
 	}
 
-	return true;
+	return num == green_walls_count;
 }
 
-bool WorldMap::all_red_walls_are_destroyed()
+bool WorldMap::bluewalls_count_equals(int num) 
 {
+	int blue_walls_count = 0;
+
+	for (Wall* w : blue_walls) {
+		if (w->render) {
+			blue_walls_count++;
+		}
+	}
+
+	return num == blue_walls_count;
+}
+
+bool WorldMap::redwalls_count_equals(int num) 
+{
+	int red_walls_count = 0;
+
 	for (Wall* w : red_walls) {
 		if (w->render) {
-			return false;
+			red_walls_count++;
 		}
 	}
 
-	return true;
+	return num == red_walls_count;
 }
+
+bool WorldMap::greenwalls_count_not_equals(int num) 
+{
+	int green_walls_count = 0;
+
+	for (Wall* w : green_walls) {
+		if (w->render) {
+			green_walls_count++;
+		}
+	}
+
+	return num != green_walls_count;
+}
+
+bool WorldMap::bluewalls_count_not_equals(int num) 
+{
+	int blue_walls_count = 0;
+
+	for (Wall* w : blue_walls) {
+		if (w->render) {
+			blue_walls_count++;
+		}
+	}
+
+	return num != blue_walls_count;
+}
+
+bool WorldMap::redwalls_count_not_equals(int num) 
+{
+	int red_walls_count = 0;
+
+	for (Wall* w : red_walls) {
+		if (w->render) {
+			red_walls_count++;
+		}
+	}
+
+	return num != red_walls_count;
+}
+
+void WorldMap::activate_switcher(int s_id)
+{
+	for (Switcher& s : switcher) {
+		if (s.id == s_id) {
+			s.active = true;
+		}
+	}
+}
+
+bool WorldMap::switcher_is_active(int s_id)
+{
+	for (const Switcher s : switcher) {
+		if (s.id == s_id && s.active) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 void WorldMap::clear_walls()
 {

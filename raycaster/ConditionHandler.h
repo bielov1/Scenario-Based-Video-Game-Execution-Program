@@ -13,8 +13,10 @@ public:
 	ConditionRegistry<Cond_Type> conditions;
 };
 
-template<typename WorldMap, typename Node, typename Type, typename Func, typename... Args>
-inline int RegisterCondition(WorldMap* map, Node* node, Type type, Func func, Args... args) {
+template<typename WorldMap, typename Node, typename Type, 
+		 typename Func, typename... Args>
+inline int RegisterCondition(WorldMap* map, Node* node, Type type, 
+							 Func func, Args... args) {
 	return ConditionHandler::GetInstance()->conditions.register_condition(
 		type,
 		[map, node, func, args...]() {

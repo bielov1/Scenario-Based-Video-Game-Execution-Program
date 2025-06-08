@@ -14,8 +14,11 @@ public:
 };
 
 
-template<typename WorldMap, typename Node, typename Type, typename Func, typename... Args>
-inline int RegisterEvent(WorldMap* map, Node* node, Type type, Func func, const std::vector<std::string>& raw_args, Args... args) {
+template<typename WorldMap, typename Node, typename Type, 
+		 typename Func, typename... Args>
+inline int RegisterEvent(WorldMap* map, Node* node, Type type, 
+						 Func func, const std::vector<std::string>& raw_args, 
+	                     Args... args) {
 	return EventHandler::GetInstance()->events.register_event(
 		type,
 		[map, node, func, args...]() {
@@ -39,4 +42,8 @@ inline Event_Type GetEventTypeByID(int id) {
 
 inline std::string GetEventSecondArgById(int id) {
 	return EventHandler::GetInstance()->events.get_second_arg_by_id(id);
+}
+
+inline std::string GetEventFirstArgById(int id) {
+	return EventHandler::GetInstance()->events.get_first_arg_by_id(id);
 }

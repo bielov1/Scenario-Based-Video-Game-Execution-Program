@@ -17,6 +17,8 @@ enum class Token_Kind
 	COND_ANY,
 	COND_NONE,
 	COND_EQ,
+	COND_NEQ,
+	COND_ACTIVE,
 
 	ACTION_SUB,
 	ACTION_BREAKWALL,
@@ -58,6 +60,8 @@ private:
 		{"any", Token_Kind::COND_ANY},
 		{"none", Token_Kind::COND_NONE},
 		{"eq", Token_Kind::COND_EQ},
+		{"neq", Token_Kind::COND_NEQ},
+		{"active", Token_Kind::COND_ACTIVE},
 		{"sub", Token_Kind::ACTION_SUB},
 		{"breakwall", Token_Kind::ACTION_BREAKWALL},
 		{"set", Token_Kind::ACTION_SET},

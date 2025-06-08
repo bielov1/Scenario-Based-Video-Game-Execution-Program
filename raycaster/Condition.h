@@ -12,7 +12,9 @@ enum class Cond_Type
 {
 	ANY,
 	NONE,
-	EQ
+	EQ,
+	NEQ,
+	ACTIVE
 };
 
 template <typename T>

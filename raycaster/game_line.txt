@@ -1,0 +1,37 @@
+map
+	any
+		set     here.time        10
+		set     here.width       10
+		set     here.height      10
+		set     here.posx        9
+		set     here.posy        9
+		build   wall       red   3   7
+		build   wall       red   9   1
+		build   wall       gree  6   3
+		build   wall       blue  0   3
+		build   wall       blue  2   7
+		build   wall       green 8   2
+		build   wall       green 2   6
+		showall wall.color blue
+		showall wall.color green
+		showall wall.color red
+		set timer.start 1
+
+interaction player wall
+	eq this2.color blue
+		breakwall bluewall
+	eq this2.color red
+		breakwall redwall
+	eq this2.color green
+		breakwall greenwall
+
+	eq greenwalls.count 0
+	eq bluewalls.count 0
+	eq redwalls.count 0
+		victory
+
+timer 1
+	any
+		sub here.time 1
+	eq here.time 0
+		failed

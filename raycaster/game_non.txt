@@ -1,0 +1,81 @@
+map
+	any
+		set here.time          100
+		set here.width         20
+		set here.height        20
+		set here.posx          10
+		set here.posy          17
+		build wall       green 3   17
+		build wall       blue  14  4
+		build wall       green 8   8
+		build wall       blue  0   19
+		build wall       red   13  1
+		build wall       blue  10  15
+		build wall       green 7   9
+		build wall       green 1   11
+		build wall       blue  6   6
+		build wall       red   16  13
+		build wall       green 17  10
+		build wall       blue  11  0
+		build wall       green 12  5
+		build wall       blue  4   18
+		build wall       red   9   14
+		build wall       red   15  7
+		build wall       green 9  16
+		build switcher_1 red   8    12
+		build switcher_2 green 10   12
+		build switcher_3 blue  12   12
+
+interaction player switcher_1
+	any
+		set timer.start 1
+		set this2.active 1
+		showall wall.color red
+		remove switcher_1
+		remove switcher_2
+		remove switcher_3
+
+interaction player switcher_2
+	any
+		set timer.start 1
+		set this2.active 1
+		showall wall.color green
+		remove switcher_1
+		remove switcher_2
+		remove switcher_3
+
+interaction player switcher_3
+	any
+		set timer.start 1
+		set this2.active 1
+		showall wall.color blue
+		remove switcher_1
+		remove switcher_2
+		remove switcher_3
+
+interaction player wall
+	eq this2.color blue
+		breakwall bluewall
+	eq bluewalls.count 0
+	active switcher_3
+		victory
+
+interaction player wall
+	eq this2.color green
+		breakwall greenwall
+	eq greenwalls.count 0
+	active switcher_2
+		victory
+
+interaction player wall
+	eq this2.color red
+		breakwall redwall
+	eq redwalls.count 0
+	active switcher_1
+		victory
+
+timer 1
+	any
+		sub here.time 1
+	eq here.time 0
+		failed

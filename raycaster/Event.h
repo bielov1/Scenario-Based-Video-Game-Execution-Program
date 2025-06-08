@@ -89,5 +89,13 @@ public:
 		}
 		throw std::out_of_range("Invalid ID or not enough arguments");
 	}
+
+	std::string get_first_arg_by_id(int id) {
+		auto it = registry.find(id);
+		if (it != registry.end() && it->second.args.size() >= 2) {
+			return it->second.args[0];
+		}
+		throw std::out_of_range("Invalid ID or not enough arguments");
+	}
 };
 

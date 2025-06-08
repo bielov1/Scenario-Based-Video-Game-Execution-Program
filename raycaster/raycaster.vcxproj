@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="Action.h" />
     <ClInclude Include="ActionHandler.h" />
+    <ClInclude Include="ActiveCondition.h" />
     <ClInclude Include="AnyCondition.h" />
     <ClInclude Include="BreakwallAction.h" />
     <ClInclude Include="BuildAction.h" />
@@ -142,6 +143,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="InteractionEvent.h" />
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="NeqCondition.h" />
     <ClInclude Include="NoneCondition.h" />
     <ClInclude Include="MapEvent.h" />
     <ClInclude Include="Player.h" />
@@ -180,7 +182,8 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="game.txt" />
+    <Text Include="game_non.txt" />
+    <Text Include="game_line.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

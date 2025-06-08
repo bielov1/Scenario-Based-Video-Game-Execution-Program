@@ -26,7 +26,8 @@ struct Node
 	Node* lact_node;
 	Node* rcond_node;
 	Node()
-		: id(-1), active(false), blocked(false), level(Scenario_Level::ZERO), prev_node(nullptr), lact_node(nullptr), rcond_node(nullptr) {}
+		: id(-1), active(false), blocked(false), level(Scenario_Level::ZERO), 
+		  prev_node(nullptr), lact_node(nullptr), rcond_node(nullptr) {}
 };
 
 typedef Node* Scenario_Branch;

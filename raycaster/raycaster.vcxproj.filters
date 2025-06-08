@@ -123,6 +123,12 @@
     <ClInclude Include="WorldMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NeqCondition.h">
+      <Filter>Conditions</Filter>
+    </ClInclude>
+    <ClInclude Include="ActiveCondition.h">
+      <Filter>Conditions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -167,6 +173,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="game.txt" />
+    <Text Include="game_non.txt" />
+    <Text Include="game_line.txt" />
   </ItemGroup>
 </Project>

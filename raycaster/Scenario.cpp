@@ -10,6 +10,8 @@
 #include "AnyCondition.h"
 #include "NoneCondition.h"
 #include "EqCondition.h"
+#include "NeqCondition.h"
+#include "ActiveCondition.h"
 #include "BreakwallAction.h"
 #include "SubAction.h"
 #include "FailedAction.h"
@@ -183,6 +185,15 @@ void Scenario::parse()
 			std::string arg2 = tokens[i+2].text;
 			i += 3;
 			register_condition(Cond_Type::EQ, EqCondition::validate, arg1, arg2);
+		} else if (t.kind == Token_Kind::COND_NEQ) {
+			std::string arg1 = tokens[i+1].text;
+			std::string arg2 = tokens[i+2].text;
+			i += 3;
+			register_condition(Cond_Type::NEQ, NeqCondition::validate, arg1, arg2);
+		} else if (t.kind == Token_Kind::COND_ACTIVE) {
+			std::string arg1 = tokens[i+1].text;
+			i += 2;
+			register_condition(Cond_Type::ACTIVE, ActiveCondition::validate, arg1);
 		} else if (t.kind == Token_Kind::ACTION_BREAKWALL) {
 			std::string arg = tokens[i+1].text;
 			i += 2;

@@ -29,15 +29,11 @@ Ray_Hit Raycaster::cast_ray(WorldMap& world_map, Vector2& p1, Vector2& p2, int c
 
 	double sx = sqrt(1 + (dy*dy)/(dx*dx));
 	double sy = sqrt(1 + (dx*dx)/(dy*dy));
-
 	double ray_len;
-
 	double ray_len_x = 0;
 	double ray_len_y = 0;
-
 	int map_check_x = int(p1.x);
 	int map_check_y = int(p1.y);
-
 	if (dx < 0) {
 		stepx = -1;
 		ray_len_x = (p1.x - double(map_check_x)) * sx;
@@ -45,7 +41,6 @@ Ray_Hit Raycaster::cast_ray(WorldMap& world_map, Vector2& p1, Vector2& p2, int c
 		stepx = 1;
 		ray_len_x = (double(map_check_x + 1) - p1.x) * sx;
 	}
-
 	if (dy < 0) {
 		stepy = -1;
 		ray_len_y = (p1.y - double(map_check_y)) * sy;
@@ -53,30 +48,25 @@ Ray_Hit Raycaster::cast_ray(WorldMap& world_map, Vector2& p1, Vector2& p2, int c
 		stepy = 1;
 		ray_len_y = (double(map_check_y + 1) - p1.y) * sy;
 	}
-
 	int side;
 	while (true) {
 		if (ray_len_x < ray_len_y) {
 			map_check_x += stepx;
 			ray_len_x += sx;
 			side = 0;
-
 		} else {
 			map_check_y += stepy;
 			ray_len_y += sy;
 			side = 1;
 		}
-
 		if (map_check_x >= 0 && map_check_x < cols && 
 			map_check_y >= 0 && map_check_y < rows &&
 			world_map.map[map_check_y][map_check_x].render) {
 			ray_len = (side == 0) ? (ray_len_x - sx) : (ray_len_y - sy);
 			return Ray_Hit(Vector2(map_check_x, map_check_y), ray_len, true);
 		}
-
 		if (!inside_map(map_check_x, map_check_y, cols, rows)) break;
 	}
-
 	return Ray_Hit(Vector2(0, 0), 0.0F, false);
 }
 

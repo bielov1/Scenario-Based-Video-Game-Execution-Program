@@ -104,7 +104,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
-	game.init_game(hWnd, "game.txt");
+	game.init_game(hWnd, "game_non.txt");
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 

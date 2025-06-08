@@ -12,35 +12,13 @@ public:
 			int player_pos_x = static_cast<int>(floor(map->player.pos.x));
 			int player_pos_y = static_cast<int>(floor(map->player.pos.y));
 
-			if (arg2 == "greenwall") {
-				size_t green_walls_count = map->green_walls.size();
-				for (int i = 0; i < green_walls_count; i++) {
-					int green_wall_pos_x = static_cast<int>(map->green_walls[i]->pos.x);
-					int green_wall_pos_y = static_cast<int>(map->green_walls[i]->pos.y);
-					if (player_pos_x == green_wall_pos_x && player_pos_y == green_wall_pos_y &&
-						map->green_walls[i]->render) {
-						node->active = true;
-						return;
-					}
-				}
-			} else if (arg2 == "bluewall") {
-				size_t blue_walls_count = map->blue_walls.size();
-				for (int i = 0; i < blue_walls_count; i++) {
-					int blue_wall_pos_x = static_cast<int>(map->blue_walls[i]->pos.x);
-					int blue_wall_pos_y = static_cast<int>(map->blue_walls[i]->pos.y);
-					if (player_pos_x == blue_wall_pos_x && player_pos_y == blue_wall_pos_y &&
-						map->blue_walls[i]->render) {
-						node->active = true;
-						return;
-					}
-				}
-			} else if (arg2 == "redwall") {
-				size_t red_walls_count = map->red_walls.size();
-				for (int i = 0; i < red_walls_count; i++) {
-					int red_wall_pos_x = static_cast<int>(map->red_walls[i]->pos.x);
-					int red_wall_pos_y = static_cast<int>(map->red_walls[i]->pos.y);
-					if (player_pos_x == red_wall_pos_x && player_pos_y == red_wall_pos_y &&
-						map->red_walls[i]->render) {
+			if (arg2 == "wall") {
+				size_t build_walls_count = map->built_walls.size();
+				for (int i = 0; i < build_walls_count; i++) {
+					int wall_pos_x = static_cast<int>(map->built_walls[i]->pos.x);
+					int wall_pos_y = static_cast<int>(map->built_walls[i]->pos.y);
+					if (player_pos_x == wall_pos_x && player_pos_y == wall_pos_y &&
+						map->built_walls[i]->render) {
 						node->active = true;
 						return;
 					}

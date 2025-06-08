@@ -24,6 +24,7 @@ enum class Wall_Color
 struct Switcher
 {
 	int id;
+	bool active = false;
 	Wall* wall;
 };
 
@@ -40,9 +41,14 @@ public:
 	void render_all_green_walls();
 	void render_all_red_walls();
 	void delete_switcher(int id);
-	bool all_blue_walls_are_destroyed();
-	bool all_green_walls_are_destroyed();
-	bool all_red_walls_are_destroyed();
+	bool greenwalls_count_equals(int num);
+	bool redwalls_count_equals(int num);
+	bool bluewalls_count_equals(int num);
+	bool greenwalls_count_not_equals(int num);
+	bool redwalls_count_not_equals(int num);
+	bool bluewalls_count_not_equals(int num);
+	bool switcher_is_active(int s_id);
+	void activate_switcher(int s_id);
 	void clear_walls();
 
 	int map_height;
@@ -50,7 +56,8 @@ public:
 	int uptime_in_secs;
 
 	std::vector<std::vector<Wall>> map;
-
+	
+	std::vector<Wall*> built_walls;
 	std::vector<Wall*> green_walls;
 	std::vector<Wall*> blue_walls;
 	std::vector<Wall*> red_walls;
