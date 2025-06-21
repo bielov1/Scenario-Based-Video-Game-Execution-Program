@@ -10,8 +10,11 @@ void Lexer::init(std::string c, std::size_t len)
 {
 	content = std::move(c);
 	content_len = len;
+	cursor = 0;
+	line = 0;
+	anchor = 0;
+	bol = 0;
 }
-
 
 char Lexer::eat_char()
 {
@@ -33,7 +36,8 @@ void Lexer::trim_left()
 
 bool Lexer::is_symbol(char x)
 {
-	return std::isalnum(static_cast<unsigned char>(x)) || x == '.' || x == '_';
+	return std::isalnum(static_cast<unsigned char>(x)) || x == '.' || x == '_' 
+													   || x == '-' || x == '+';
 }
 
 Token Lexer::next_token()
@@ -49,7 +53,7 @@ Token Lexer::next_token()
 			token.text += eat_char();
 			token.text_len += 1;
 		}
-
+		token.line = line;
 		auto kind = token_kinds.find(token.text);
 		if (kind != token_kinds.end()) {
 			token.kind = kind->second;

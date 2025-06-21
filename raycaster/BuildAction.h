@@ -16,21 +16,21 @@ public:
 		
 		if (arg1 == "wall") {
 			if (arg2 == "blue") {
-				map->build_wall(Wall_Color::BLUE, num1, num2);
+				map->build_wall(RGB(255, 0, 0), num1, num2);
 			} else if (arg2 == "green") {
-				map->build_wall(Wall_Color::GREEN, num1, num2);
+				map->build_wall(RGB(0, 255, 0), num1, num2);
 			} else if (arg2 == "red") {
-				map->build_wall(Wall_Color::RED, num1, num2);
+				map->build_wall(RGB(0, 0, 255), num1, num2);
 			}
 		} else if (arg1.find("switcher_") == 0) {
 			std::string num_str = arg1.substr(9);
 			int switcher_id = std::stoi(num_str);
 			if (arg2 == "blue") {
-				map->build_switcher(Wall_Color::BLUE, switcher_id, num1, num2);
+				map->build_switcher(RGB(255, 0, 0), switcher_id, num1, num2);
 			} else if (arg2 == "green"){
-				map->build_switcher(Wall_Color::GREEN, switcher_id, num1, num2);
+				map->build_switcher(RGB(0, 255, 0), switcher_id, num1, num2);
 			} else if (arg2 == "red") {
-				map->build_switcher(Wall_Color::RED, switcher_id, num1, num2);
+				map->build_switcher(RGB(0, 0, 255), switcher_id, num1, num2);
 			}
 		}
 		

@@ -22,11 +22,11 @@ public:
 			std::string after_dot = arg1.substr(prefix.length());
 			if (after_dot == "color") {
 				if (arg2 == "blue") {
-					map->render_all_blue_walls();
+					map->render_all_walls_with_color(RGB(255, 0, 0));
 				} else if (arg2 == "green") {
-					map->render_all_green_walls();
+					map->render_all_walls_with_color(RGB(0, 255, 0));
 				} else if (arg2 == "red") {
-					map->render_all_red_walls();
+					map->render_all_walls_with_color(RGB(0, 0, 255));
 				}
 			}
 		} 

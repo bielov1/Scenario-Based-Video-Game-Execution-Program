@@ -19,15 +19,13 @@ map
 
 interaction player wall
 	eq this2.color blue
-		breakwall bluewall
+		breakwall
 	eq this2.color red
-		breakwall redwall
+		breakwall
 	eq this2.color green
-		breakwall greenwall
+		breakwall
 
-	eq greenwalls.count 0
-	eq bluewalls.count 0
-	eq redwalls.count 0
+	eq map.empty true
 		victory
 
 timer 1
@@ -35,3 +33,7 @@ timer 1
 		sub here.time 1
 	eq here.time 0
 		failed
+		
+		
+		
+		

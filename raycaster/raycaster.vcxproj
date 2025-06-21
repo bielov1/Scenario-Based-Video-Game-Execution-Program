@@ -181,10 +181,6 @@
     <Image Include="raycaster.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="game_non.txt" />
-    <Text Include="game_line.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

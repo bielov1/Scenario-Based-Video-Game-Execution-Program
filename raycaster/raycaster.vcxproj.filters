@@ -172,8 +172,4 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="game_non.txt" />
-    <Text Include="game_line.txt" />
-  </ItemGroup>
 </Project>

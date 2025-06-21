@@ -6,6 +6,7 @@
 enum class Game_State
 {
 	LAUNCH,
+	INPUT_SCENARIO,
 	RUN,
 	EXIT
 };
@@ -24,7 +25,7 @@ class Game
 {
 public:
 	Game();
-	void init_game(HWND hwnd, std::string path);
+	void init_game(HWND hwnd, TCHAR* path);
 	
 	int on_timer();
 
@@ -33,13 +34,19 @@ public:
 	
 	void Render_Failed_Screen(HDC hdc, int width, int height);
 	void Render_Victory_Screen(HDC hdc, int width, int height);
+	void draw_timer_to_frame_buffer();
+	void show_validation_errors(HDC hdc, int width, int height);
 
-	void draw_text_on_screen(HDC hdc, std::string text, RECT text_rect, COLORREF text_color, UINT format);
+	void draw_text_on_screen(HDC hdc, std::string text, RECT text_rect, COLORREF text_color, UINT format, int font_size = 24);
 	
-	static const int FPS = 60;
+	static const int FPS = 120;
 
 	int screen_width;
 	int screen_height;
+
+	ULONGLONG timer_start_time;
+
+	std::string validation_errors;
 
 	Game_State state;
 	Back_Buffer frame_buffer;

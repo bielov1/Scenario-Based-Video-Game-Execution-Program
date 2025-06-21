@@ -28,91 +28,101 @@ public:
 		}
 		return true;
 	}
-	
+
+	static void is_color(WorldMap* map, Node* node, std::string parsed_arg2)
+	{
+		if (parsed_arg2 == "blue") {
+			if (map->wall_interaction->rgb_color == RGB(255, 0, 0)) {
+				node->active = true;
+			}
+		} else if (parsed_arg2 == "green") {
+			if (map->wall_interaction->rgb_color == RGB(0, 255, 0)) {
+				node->active = true;
+			}
+		} else if (parsed_arg2 == "red") {
+			if (map->wall_interaction->rgb_color == RGB(0, 0, 255)) {
+				node->active = true;
+			}
+		}
+	}
+
 	static void validate(WorldMap* map, Node* node, std::string arg1, std::string arg2)
 	{
 		const Node* root = get_root(node);
-		std::string parsed_arg2 = arg2;
 		int numeric_arg2 = 0;
+		int numeric_arg1 = 0;
 
 		if (is_number(arg2)) {
 			numeric_arg2 = std::stoi(arg2);
 		}
 
-		const std::string prefix_greenwalls = "greenwalls.";
-		const std::string prefix_redwalls = "redwalls.";
-		const std::string prefix_bluewalls = "bluewalls.";
-		const std::string prefix_this = "this2.";
-		const std::string prefix_here = "here.";
-		if (arg1.rfind(prefix_this, 0) == 0) {
-			std::string root_arg2 = GetEventSecondArgById(root->id);
-			std::string root_arg1 = GetEventFirstArgById(root->id);
-			if (root_arg1 == "player") {
-				int player_pos_x = static_cast<int>(floor(map->player.pos.x));
-				int player_pos_y = static_cast<int>(floor(map->player.pos.y));
+		if (is_number(arg1)) {
+			numeric_arg1 = std::stoi(arg1);
+		}
 
-				if (root_arg2 == "wall") {
-					std::string after_dot = arg1.substr(prefix_this.length());
-					if (after_dot == "color") {
-						if (parsed_arg2 == "blue") {
-							size_t blue_walls_count = map->blue_walls.size();
-							for (int i = 0; i < blue_walls_count; i++) {
-								int blue_wall_pos_x = static_cast<int>(map->blue_walls[i]->pos.x);
-								int blue_wall_pos_y = static_cast<int>(map->blue_walls[i]->pos.y);
-								if (player_pos_x == blue_wall_pos_x && player_pos_y == blue_wall_pos_y &&
-									map->blue_walls[i]->render) {
-									node->active = true;
-									return;
-								}
-							}
-						} else if (parsed_arg2 == "green") {
-							size_t green_walls_count = map->green_walls.size();
-							for (int i = 0; i < green_walls_count; i++) {
-								int green_wall_pos_x = static_cast<int>(map->green_walls[i]->pos.x);
-								int green_wall_pos_y = static_cast<int>(map->green_walls[i]->pos.y);
-								if (player_pos_x == green_wall_pos_x && player_pos_y == green_wall_pos_y &&
-									map->green_walls[i]->render) {
-									node->active = true;
-									return;
-								}
-							}
-						} else if (parsed_arg2 == "red") {
-							size_t red_walls_count = map->red_walls.size();
-							for (int i = 0; i < red_walls_count; i++) {
-								int red_wall_pos_x = static_cast<int>(map->red_walls[i]->pos.x);
-								int red_wall_pos_y = static_cast<int>(map->red_walls[i]->pos.y);
-								if (player_pos_x == red_wall_pos_x && player_pos_y == red_wall_pos_y &&
-									map->red_walls[i]->render) {
-									node->active = true;
-									return;
-								}
-							}
-						}
-					}
- 				}
-			} 
-		} else if (arg1.rfind(prefix_greenwalls, 0) == 0) {
-			std::string after_dot = arg1.substr(prefix_greenwalls.length());
-			if (after_dot == "count") {
-				if (map->greenwalls_count_equals(numeric_arg2)) {
-					node->active = true;
+		const std::string prefix_this1 = "this1.";
+		const std::string prefix_this2 = "this2.";
+		const std::string prefix_wall = "wall.";
+		const std::string prefix_play = "player.";
+		const std::string prefix_here = "here.";
+		const std::string prefix_timer = "timer.";
+		const std::string prefix_map = "map.";
+
+		std::string root_arg2 = GetEventSecondArgById(root->id);
+		std::string root_arg1 = GetEventFirstArgById(root->id);
+		if (arg1.rfind(prefix_this2, 0) == 0) {
+			if (root_arg2 == "player") {
+				return;
+			} else if (root_arg2 == "wall") {
+				std::string after_dot = arg1.substr(prefix_this2.length());
+				if (after_dot == "color") {
+					is_color(map, node, arg2);
 				}
 			}
-		} else if (arg1.rfind(prefix_bluewalls, 0) == 0) {
-			std::string after_dot = arg1.substr(prefix_bluewalls.length());
-			if (after_dot == "count") {
-				if (map->bluewalls_count_equals(numeric_arg2)) {
-					node->active = true;
+		} 
+		else if (arg2.rfind(prefix_this2, 0) == 0) {
+			if (root_arg2 == "player") {
+				return;
+			} else if (root_arg2 == "wall") {
+				std::string after_dot = arg2.substr(prefix_this2.length());
+				if (after_dot == "color") {
+					is_color(map, node, arg1);
 				}
 			}
-		} else if (arg1.rfind(prefix_redwalls, 0) == 0) {
-			std::string after_dot = arg1.substr(prefix_redwalls.length());
-			if (after_dot == "count") {
-				if (map->redwalls_count_equals(numeric_arg2)) {
-					node->active = true;
+		}
+		else if (arg1.rfind(prefix_this1, 0) == 0) {
+			if (root_arg1 == "player") {
+				return;
+			} else if (root_arg1 == "wall") {
+				std::string after_dot = arg1.substr(prefix_this1.length());
+				if (after_dot == "color") {
+					is_color(map, node, arg2);
 				}
 			}
-		} else if (arg1.rfind(prefix_here, 0) == 0) {
+		}
+		else if (arg2.rfind(prefix_this1, 0) == 0) {
+			if (root_arg1 == "player") {
+				return;
+			} else if (root_arg1 == "wall") {
+				std::string after_dot = arg2.substr(prefix_this1.length());
+				if (after_dot == "color") {
+					is_color(map, node, arg1);
+				}
+			}
+		}
+		else if (arg1.rfind(prefix_wall, 0) == 0) {
+			std::string after_dot = arg1.substr(prefix_wall.length());
+			if (after_dot == "color") {
+				is_color(map, node, arg2);
+			}
+		} 
+		else if (arg2.rfind(prefix_wall, 0) == 0) {
+			std::string after_dot = arg2.substr(prefix_wall.length());
+			if (after_dot == "color") {
+				is_color(map, node, arg1);
+			}
+		} 
+		else if (arg1.rfind(prefix_here, 0) == 0) {
 			std::string after_dot = arg1.substr(prefix_here.length());
 			Event_Type t = GetEventTypeByID(root->id);
 			if (t == Event_Type::TIMER) {
@@ -121,6 +131,67 @@ public:
 						node->active = true;
 					}
 				} 
+			}
+		} 
+		else if (arg1.rfind(prefix_timer, 0) == 0) {
+			std::string after_dot = arg1.substr(prefix_timer.length());
+			Event_Type t = GetEventTypeByID(root->id);
+			if (t == Event_Type::TIMER) {
+				if (after_dot == "time") {
+					if (map->quest_timer.get_timer_count() == numeric_arg2) {
+						node->active = true;
+					}
+				} 
+			}
+		} 
+		else if (arg2.rfind(prefix_here, 0) == 0) {
+			std::string after_dot = arg2.substr(prefix_here.length());
+			Event_Type t = GetEventTypeByID(root->id);
+			if (t == Event_Type::TIMER) {
+				if (after_dot == "time") {
+					if (map->quest_timer.get_timer_count() == numeric_arg1) {
+						node->active = true;
+					}
+				} 
+			}
+		} 
+		else if (arg2.rfind(prefix_timer, 0) == 0) {
+			std::string after_dot = arg2.substr(prefix_timer.length());
+			Event_Type t = GetEventTypeByID(root->id);
+			if (t == Event_Type::TIMER) {
+				if (after_dot == "time") {
+					if (map->quest_timer.get_timer_count() == numeric_arg1) {
+						node->active = true;
+					}
+				} 
+			}
+		}
+		else if (arg1.rfind(prefix_map, 0) == 0) {
+			std::string after_dot = arg1.substr(prefix_map.length());
+			if (after_dot == "empty") {
+				if (arg2 == "true") {
+					if (map->map_empty()) {
+						node->active = true;
+					}
+				} else if (arg2 == "false") {
+					if (!map->map_empty()) {
+						node->active = true;
+					}
+				}
+			}
+		}
+		else if (arg2.rfind(prefix_map, 0) == 0) {
+			std::string after_dot = arg2.substr(prefix_map.length());
+			if (after_dot == "empty") {
+				if (arg1 == "true") {
+					if (map->map_empty()) {
+						node->active = true;
+					}
+				} else if (arg1 == "false") {
+					if (!map->map_empty()) {
+						node->active = true;
+					}
+				}
 			}
 		}
 	}

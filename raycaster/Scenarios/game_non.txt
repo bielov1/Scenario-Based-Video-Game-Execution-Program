@@ -53,24 +53,24 @@ interaction player switcher_3
 		remove switcher_2
 		remove switcher_3
 
-interaction player wall
-	eq this2.color blue
-		breakwall bluewall
-	eq bluewalls.count 0
+interaction wall player 
+	eq this1.color blue
+		breakwall
+	eq map.empty true
 	active switcher_3
 		victory
 
-interaction player wall
-	eq this2.color green
-		breakwall greenwall
-	eq greenwalls.count 0
+interaction wall player
+	eq this1.color green
+		breakwall
+	eq map.empty true
 	active switcher_2
 		victory
 
 interaction player wall
 	eq this2.color red
-		breakwall redwall
-	eq redwalls.count 0
+		breakwall
+	eq map.empty true
 	active switcher_1
 		victory
 

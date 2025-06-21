@@ -3,7 +3,7 @@
 
 
 WorldMap::WorldMap()
-	: map_height(0), map_width(0), uptime_in_secs(0), quest_timer(), player(), map_state(Map_State::START)
+	: map_height(0), map_width(0), uptime_in_secs(0), quest_timer(), player(), wall_interaction(nullptr), map_state(Map_State::START)
 {}
 
 void WorldMap::init()
@@ -25,7 +25,7 @@ void WorldMap::ensure_map_initialized()
 	}
 }
 
-void WorldMap::build_wall(Wall_Color color, int x, int y)
+void WorldMap::build_wall(COLORREF color, int x, int y)
 {
 	ensure_map_initialized();
 
@@ -34,28 +34,10 @@ void WorldMap::build_wall(Wall_Color color, int x, int y)
 		return;
 	}
 
-	switch(color) {
-	case Wall_Color::RED:
-		map[y][x].rgb_color = RGB(0, 0, 255);
-		red_walls.push_back(&map[y][x]);
-		built_walls.push_back(&map[y][x]);
-		break;
-	case Wall_Color::GREEN:
-		map[y][x].rgb_color = RGB(0, 255, 0);
-		green_walls.push_back(&map[y][x]);
-		built_walls.push_back(&map[y][x]);
-		break;
-	case Wall_Color::BLUE:
-		map[y][x].rgb_color = RGB(255, 0, 0);
-		blue_walls.push_back(&map[y][x]);
-		built_walls.push_back(&map[y][x]);
-		break;
-	default:
-		return;
-	}
+	map[y][x].rgb_color = color;
 }
 
-void WorldMap::build_switcher(Wall_Color color, int id, int x, int y)
+void WorldMap::build_switcher(COLORREF color, int id, int x, int y)
 {
 	ensure_map_initialized();
 
@@ -65,55 +47,35 @@ void WorldMap::build_switcher(Wall_Color color, int id, int x, int y)
 	}
 
 	Switcher sw;
-	switch(color) {
-	case Wall_Color::RED:
-		map[y][x].rgb_color = RGB(0, 0, 255);
-		map[y][x].render = true;
-		sw.id = id;
-		sw.wall = &map[y][x];
-		switcher.push_back(sw);
-		break;
-	case Wall_Color::GREEN:
-		map[y][x].rgb_color = RGB(0, 255, 0);
-		map[y][x].render = true;
-		sw.id = id;
-		sw.wall = &map[y][x];
-		switcher.push_back(sw);
-		break;
-	case Wall_Color::BLUE:
-		map[y][x].rgb_color = RGB(255, 0, 0);
-		map[y][x].render = true;
-		sw.id = id;
-		sw.wall = &map[y][x];
-		switcher.push_back(sw);
-		break;
-	default:
-		return;
+	map[y][x].rgb_color = color;
+	map[y][x].render = true;
+	sw.id = id;
+	sw.wall = &map[y][x];
+	switcher.push_back(sw);
+}
+
+void WorldMap::render_all_walls_with_color(COLORREF color)
+{
+	size_t map_size = map.size();
+	for (int i = 0; i < map_size; i++) {
+		for (int j = 0; j < map_size; j++) {
+			if (!map[i][j].render && map[i][j].rgb_color == color) {
+				map[i][j].render = true;
+			}
+		}
 	}
 }
 
-void WorldMap::render_all_blue_walls()
-{
-	size_t blue_walls_count = blue_walls.size();
-	for (int i = 0; i < blue_walls_count; i++) {
-		blue_walls[i]->render = true;
+bool WorldMap::map_empty() {
+	for (const auto& row : map) {
+		for (const Wall& wall : row) {
+			if (wall.render) {
+				return false;
+			}
+		}
 	}
-}
 
-void WorldMap::render_all_green_walls()
-{
-	size_t green_walls_count = green_walls.size();
-	for (int i = 0; i < green_walls_count; i++) {
-		green_walls[i]->render = true;
-	}
-}
-
-void WorldMap::render_all_red_walls()
-{
-	size_t red_walls_count = red_walls.size();
-	for (int i = 0; i < red_walls_count; i++) {
-		red_walls[i]->render = true;
-	}
+	return true;
 }
 
 void WorldMap::delete_switcher(int id)
@@ -121,88 +83,24 @@ void WorldMap::delete_switcher(int id)
 	for (auto it = switcher.begin(); it != switcher.end(); ++it) {
 		if (it->id == id) {
 			it->wall->render = false;
-			//switcher.erase(it);
 			break;
 		}
 	}
 }
 
-bool WorldMap::greenwalls_count_equals(int num) 
+bool WorldMap::walls_color_count_equals(int num, COLORREF color) 
 {
-	int green_walls_count = 0;
+	int walls_color_count = 0;
 
-	for (Wall* w : green_walls) {
-		if (w->render) {
-			green_walls_count++;
+	for (const auto& row : map) {
+		for (const Wall& wall : row) {
+			if (wall.render && wall.rgb_color == color) {
+				walls_color_count++;
+			}
 		}
 	}
 
-	return num == green_walls_count;
-}
-
-bool WorldMap::bluewalls_count_equals(int num) 
-{
-	int blue_walls_count = 0;
-
-	for (Wall* w : blue_walls) {
-		if (w->render) {
-			blue_walls_count++;
-		}
-	}
-
-	return num == blue_walls_count;
-}
-
-bool WorldMap::redwalls_count_equals(int num) 
-{
-	int red_walls_count = 0;
-
-	for (Wall* w : red_walls) {
-		if (w->render) {
-			red_walls_count++;
-		}
-	}
-
-	return num == red_walls_count;
-}
-
-bool WorldMap::greenwalls_count_not_equals(int num) 
-{
-	int green_walls_count = 0;
-
-	for (Wall* w : green_walls) {
-		if (w->render) {
-			green_walls_count++;
-		}
-	}
-
-	return num != green_walls_count;
-}
-
-bool WorldMap::bluewalls_count_not_equals(int num) 
-{
-	int blue_walls_count = 0;
-
-	for (Wall* w : blue_walls) {
-		if (w->render) {
-			blue_walls_count++;
-		}
-	}
-
-	return num != blue_walls_count;
-}
-
-bool WorldMap::redwalls_count_not_equals(int num) 
-{
-	int red_walls_count = 0;
-
-	for (Wall* w : red_walls) {
-		if (w->render) {
-			red_walls_count++;
-		}
-	}
-
-	return num != red_walls_count;
+	return num == walls_color_count;
 }
 
 void WorldMap::activate_switcher(int s_id)
@@ -223,12 +121,4 @@ bool WorldMap::switcher_is_active(int s_id)
 	}
 
 	return false;
-}
-
-
-void WorldMap::clear_walls()
-{
-	red_walls.clear();
-	green_walls.clear();
-	blue_walls.clear();
 }

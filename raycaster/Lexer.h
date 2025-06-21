@@ -12,7 +12,6 @@ enum class Token_Kind
 	EVENT_INTERACTION,
 	EVENT_MAP,
 	EVENT_TIMER,
-	EVENT_KEYBOARD,
 
 	COND_ANY,
 	COND_NONE,
@@ -36,9 +35,10 @@ struct Token
 {
 	Token_Kind kind;
 	std::string text;
+	int line;
 	std::size_t text_len;
 	Token() :
-		kind(Token_Kind::END), text(""), text_len(0)
+		kind(Token_Kind::END), line(0), text(""), text_len(0)
 	{
 	}
 };
@@ -49,7 +49,7 @@ private:
 	std::string content;
 	std::size_t content_len;
 	std::size_t cursor; // arbitrary point in file content
-	std::size_t line; 
+	int line; 
 	std::size_t anchor;
 	std::size_t bol; // beginning of line to calculate indentation level
 

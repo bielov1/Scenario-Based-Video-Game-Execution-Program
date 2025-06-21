@@ -82,20 +82,24 @@ public:
 		throw std::out_of_range("get_type_by_id: Invalid event ID");
 	}
 
-	std::string get_second_arg_by_id(int id) {
+	std::string get_second_arg_by_id(int id) 
+	{
 		auto it = registry.find(id);
 		if (it != registry.end() && it->second.args.size() >= 2) {
 			return it->second.args[1];
+		} else {
+			return "";
 		}
-		throw std::out_of_range("Invalid ID or not enough arguments");
 	}
 
-	std::string get_first_arg_by_id(int id) {
+	std::string get_first_arg_by_id(int id) 
+	{
 		auto it = registry.find(id);
 		if (it != registry.end() && it->second.args.size() >= 2) {
 			return it->second.args[0];
+		} else {
+			return "";
 		}
-		throw std::out_of_range("Invalid ID or not enough arguments");
 	}
 };
 

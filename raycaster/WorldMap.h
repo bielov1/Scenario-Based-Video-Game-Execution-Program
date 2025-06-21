@@ -14,18 +14,11 @@ enum class Map_State
 	RESTART
 };
 
-enum class Wall_Color
-{
-	RED,
-	GREEN,
-	BLUE
-};
-
 struct Switcher
 {
-	int id;
+	int id = 0;
 	bool active = false;
-	Wall* wall;
+	Wall* wall = nullptr;
 };
 
 class WorldMap
@@ -35,36 +28,28 @@ public:
 	WorldMap();
 	void init();
 	void ensure_map_initialized();
-	void build_wall(Wall_Color color, int x, int y);
-	void build_switcher(Wall_Color color, int id, int x, int y);
-	void render_all_blue_walls();
-	void render_all_green_walls();
-	void render_all_red_walls();
+	void build_wall(COLORREF color, int x, int y);
+	void build_switcher(COLORREF color, int id, int x, int y);
+
+	void render_all_walls_with_color(COLORREF color);
+	bool map_empty();
 	void delete_switcher(int id);
-	bool greenwalls_count_equals(int num);
-	bool redwalls_count_equals(int num);
-	bool bluewalls_count_equals(int num);
-	bool greenwalls_count_not_equals(int num);
-	bool redwalls_count_not_equals(int num);
-	bool bluewalls_count_not_equals(int num);
+
+	bool walls_color_count_equals(int num, COLORREF color);
+
 	bool switcher_is_active(int s_id);
 	void activate_switcher(int s_id);
-	void clear_walls();
 
 	int map_height;
 	int map_width;
 	int uptime_in_secs;
 
 	std::vector<std::vector<Wall>> map;
-	
-	std::vector<Wall*> built_walls;
-	std::vector<Wall*> green_walls;
-	std::vector<Wall*> blue_walls;
-	std::vector<Wall*> red_walls;
-
 	std::vector<Switcher> switcher; 
 
 	Map_State map_state;
 	QuestTimer quest_timer;
 	Player player;
+
+	Wall* wall_interaction;
 };
